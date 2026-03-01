@@ -14,6 +14,10 @@ app.get("/", (req, res) => {
 
 connectDB();
 
+app.get("/api/test", (req, res) => {
+  res.json({ message: "Frontend ↔ Backend connected ✅" });
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
