@@ -1,19 +1,20 @@
-import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";// 
 
 export default function App() {
-  const [msg, setMsg] = useState("Loading...");
-
-  useEffect(() => {
-    fetch("/api/test")
-      .then((r) => r.json())
-      .then((d) => setMsg(d.message))
-      .catch(() => setMsg("Backend not reachable ❌"));
-  }, []);
-
   return (
-    <div style={{ padding: 20 }}>
-      <h1>🍌 Banana Game</h1>
-      <p>{msg}</p>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/login" element={<Login />} />
+        { <Route path="/register" element={<Register />} /> }
+
+        {/* TEMP placeholder so nav("/game") doesn't break */}
+        <Route path="/game" element={<div style={{ padding: 40 }}>Game page coming… 🍌</div>} />
+
+        <Route path="*" element={<div style={{ padding: 40 }}>Not found</div>} />
+      </Routes>
+    </BrowserRouter>
   );
 }

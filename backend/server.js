@@ -14,6 +14,9 @@ app.get("/", (req, res) => {
 
 connectDB();
 
+const authRoutes = require("./routes/authRoutes");
+app.use("/api/auth", authRoutes);
+
 app.get("/api/test", (req, res) => {
   res.json({ message: "Frontend ↔ Backend connected ✅" });
 });
