@@ -1,0 +1,9 @@
+const router = require("express").Router();
+const auth = require("../middleware/authMiddleware");
+const { getPuzzle, submitAnswer, leaderboard } = require("../controllers/gameController");
+
+router.get("/puzzle", auth, getPuzzle);
+router.post("/submit", auth, submitAnswer);
+router.get("/leaderboard", leaderboard);
+
+module.exports = router;

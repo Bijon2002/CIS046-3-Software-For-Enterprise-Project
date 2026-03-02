@@ -17,6 +17,13 @@ connectDB();
 const authRoutes = require("./routes/authRoutes");
 app.use("/api/auth", authRoutes);
 
+
+
+const gameRoutes = require("./routes/gameRoutes");
+
+app.use("/api/game", gameRoutes);
+
+
 app.get("/api/test", (req, res) => {
   res.json({ message: "Frontend ↔ Backend connected ✅" });
 });
