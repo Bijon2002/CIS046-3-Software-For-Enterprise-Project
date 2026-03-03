@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getPuzzle, submitAnswer } from "../api/game";
+import { getMe } from "../api/game";
 
 export default function Game() {
   const [puzzle, setPuzzle] = useState(null);
@@ -22,6 +23,12 @@ export default function Game() {
   useEffect(() => {
     loadPuzzle();
   }, []);
+
+  
+  useEffect(() => {
+  getMe().then((res) => setScore(res.data.score)).catch(() => {});
+  loadPuzzle();
+}, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
