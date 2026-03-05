@@ -1,6 +1,5 @@
 const router = require("express").Router();
 const auth = require("../middleware/authMiddleware");
-const { getPuzzle, submitAnswer, leaderboard } = require("../controllers/gameController");
 const { getPuzzle, submitAnswer, leaderboard, me } = require("../controllers/gameController");
 
 router.get("/puzzle", auth, getPuzzle);

@@ -15,20 +15,30 @@ export default function Game() {
       const res = await getPuzzle();
       setPuzzle(res.data);
       setMsg("");
-    } catch (err) {
+    } catch {
       setMsg("Failed to load puzzle");
     }
   };
 
   useEffect(() => {
-    loadPuzzle();
+    const initializeGame = async () => {
+      await loadPuzzle();
+    };
+    initializeGame();
   }, []);
 
-  
   useEffect(() => {
-  getMe().then((res) => setScore(res.data.score)).catch(() => {});
-  loadPuzzle();
-}, []);
+    const fetchData = async () => {
+      try {
+        const res = await getMe();
+        setScore(res.data.score);
+      } catch {
+        // Handle error if needed
+      }
+      await loadPuzzle();
+    };
+    fetchData();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
