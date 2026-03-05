@@ -7,37 +7,41 @@ export default function History() {
   useEffect(() => {
     getHistory()
       .then((res) => setRows(res.data))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   return (
-    <div style={{ padding: 40 }}>
-      <h2>📜 My Attempts (last 20)</h2>
+    <div className="page-container" style={{ alignItems: "flex-start", paddingTop: 40 }}>
+      <div className="glass-card" style={{ width: "100%", maxWidth: 720 }}>
+        <h2>📜 MY ATTEMPTS</h2>
 
-      {rows.length === 0 ? (
-        <p>No attempts yet. Play a few puzzles first 🍌</p>
-      ) : (
-        <table border="1" cellPadding="8" style={{ borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Your Answer</th>
-              <th>Correct</th>
-              <th>Result</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((a) => (
-              <tr key={a._id}>
-                <td>{new Date(a.createdAt).toLocaleString()}</td>
-                <td>{a.answer ?? "-"}</td>
-                <td>{a.correctAnswer}</td>
-                <td>{a.isCorrect ? "✅" : "❌"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+        {rows.length === 0 ? (
+          <p style={{ textAlign: "center" }}>No attempts yet. Play a few puzzles first 🍌</p>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Your Answer</th>
+                  <th>Correct</th>
+                  <th>Result</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((a) => (
+                  <tr key={a._id}>
+                    <td>{new Date(a.createdAt).toLocaleString()}</td>
+                    <td>{a.answer ?? "-"}</td>
+                    <td>{a.correctAnswer}</td>
+                    <td>{a.isCorrect ? "✅" : "❌"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

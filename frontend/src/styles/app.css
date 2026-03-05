@@ -1,0 +1,314 @@
+/* ===== Global Jungle Theme ===== */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+  --gold: #D4A017;
+  --gold-light: #FFD700;
+  --gold-dark: #8B6914;
+  --bg-dark: rgba(10, 8, 2, 0.55);
+  --bg-card: rgba(10, 8, 2, 0.7);
+  --border-gold: rgba(212, 160, 23, 0.3);
+  --text-primary: #FFD700;
+  --text-secondary: #cdb990;
+  --text-muted: rgba(205, 185, 144, 0.7);
+  --green-accent: #7CFC00;
+  --font-pixel: 'Press Start 2P', monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ---------- Full-screen jungle background on body ---------- */
+body {
+  font-family: var(--font-pixel);
+  background: url("../assets/back.png") no-repeat center center fixed;
+  background-size: cover;
+  color: var(--text-secondary);
+  min-height: 100vh;
+}
+
+/* Dark overlay via #root */
+#root {
+  min-height: 100vh;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.5) 100%);
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 24px;
+  background: rgba(10, 8, 2, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-gold);
+  color: var(--text-primary);
+  font-family: var(--font-pixel);
+  font-size: 0.65rem;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.navbar b {
+  font-size: 0.75rem;
+  color: var(--gold-light);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+  margin-right: auto;
+}
+
+.navbar a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+}
+
+.navbar a:hover {
+  color: var(--gold-light);
+  background: rgba(212, 160, 23, 0.15);
+  text-decoration: none;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+.navbar button {
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  padding: 8px 14px;
+  background: rgba(180, 50, 50, 0.3);
+  border: 1px solid rgba(255, 77, 79, 0.4);
+  color: #ff6b6b;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+}
+
+.navbar button:hover {
+  background: rgba(180, 50, 50, 0.5);
+  border-color: #ff6b6b;
+  box-shadow: 0 0 12px rgba(255, 77, 79, 0.3);
+}
+
+/* ---------- Glass Card (reusable) ---------- */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-gold);
+  border-radius: 20px;
+  padding: 40px 36px;
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  animation: cardFadeIn 0.5s ease-out both;
+}
+
+@keyframes cardFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Page Layout ---------- */
+.page-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 56px);
+  padding: 40px 20px;
+}
+
+/* ---------- Headings ---------- */
+h2 {
+  font-family: var(--font-pixel);
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+  margin-bottom: 24px;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+h3 {
+  font-family: var(--font-pixel);
+  font-size: 0.8rem;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+/* ---------- Forms ---------- */
+form input {
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  padding: 12px 16px;
+  background: rgba(26, 14, 0, 0.6);
+  border: 1px solid var(--border-gold);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  outline: none;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+  width: 100%;
+}
+
+form input::placeholder {
+  color: var(--text-muted);
+}
+
+form input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 12px rgba(212, 160, 23, 0.25);
+}
+
+/* ---------- Buttons (global) ---------- */
+button {
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  color: #fff;
+  border: 2px solid var(--gold);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+button:hover {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  background: rgba(100, 80, 50, 0.3);
+  border-color: rgba(100, 80, 50, 0.4);
+  color: #666;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ---------- Timer ---------- */
+.timer {
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: var(--gold-light);
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+/* ---------- Game container ---------- */
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.puzzle-img {
+  display: block;
+  margin: 20px auto;
+  max-width: 420px;
+  border-radius: 12px;
+  border: 2px solid var(--border-gold);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* ---------- Tables ---------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-pixel);
+  font-size: 0.55rem;
+}
+
+th,
+td {
+  padding: 12px 14px;
+  text-align: left;
+}
+
+th {
+  background: rgba(212, 160, 23, 0.15);
+  color: var(--gold-light);
+  border-bottom: 2px solid var(--border-gold);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.5rem;
+}
+
+td {
+  border-bottom: 1px solid rgba(212, 160, 23, 0.1);
+  color: var(--text-secondary);
+}
+
+tbody tr:hover {
+  background: rgba(212, 160, 23, 0.05);
+}
+
+/* ---------- Links ---------- */
+a {
+  color: var(--gold);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--gold-light);
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+/* ---------- Paragraphs / messages ---------- */
+p {
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+/* ---------- Ordered / Unordered lists ---------- */
+ol,
+ul {
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  padding-left: 20px;
+}
+
+ol li,
+ul li {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(212, 160, 23, 0.1);
+}
+
+/* ---------- Scrollbar ---------- */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(10, 8, 2, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gold-dark);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}

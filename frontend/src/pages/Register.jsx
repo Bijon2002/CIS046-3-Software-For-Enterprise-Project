@@ -14,7 +14,7 @@ export default function Register() {
 
     try {
       await registerUser(email, password);
-      setMsg("Registered successfully ✅ Redirecting to login...");
+      setMsg("Registered ✅ Redirecting to login...");
       setTimeout(() => nav("/login"), 1000);
     } catch (err) {
       setMsg(err?.response?.data?.message || "Register failed");
@@ -22,29 +22,31 @@ export default function Register() {
   };
 
   return (
-    <div style={{ padding: 40 }}>
-      <h2>🍌 Banana Game Register</h2>
+    <div className="page-container">
+      <div className="glass-card" style={{ minWidth: 340, maxWidth: 400 }}>
+        <h2>🍌 REGISTER</h2>
 
-      <form onSubmit={submit} style={{ display: "grid", gap: 10, maxWidth: 300 }}>
-        <input
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          placeholder="Password (min 6 chars)"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button>Create Account</button>
-      </form>
+        <form onSubmit={submit} style={{ display: "grid", gap: 14 }}>
+          <input
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            placeholder="Password (min 6 chars)"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button type="submit">Create Account</button>
+        </form>
 
-      <p>{msg}</p>
+        {msg && <p style={{ marginTop: 16, textAlign: "center" }}>{msg}</p>}
 
-      <p>
-        Already have account? <Link to="/login">Login</Link>
-      </p>
+        <p style={{ marginTop: 20, textAlign: "center" }}>
+          Already have account? <Link to="/login">Login</Link>
+        </p>
+      </div>
     </div>
   );
 }
