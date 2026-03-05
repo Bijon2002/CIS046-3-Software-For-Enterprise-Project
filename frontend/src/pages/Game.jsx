@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { getPuzzle, submitAnswer, getMe } from "../api/game";
+import { useNavigate } from "react-router-dom";
 
 export default function Game() {
   const [puzzle, setPuzzle] = useState(null);
@@ -11,6 +12,7 @@ export default function Game() {
   const [isLocked, setIsLocked] = useState(false);
 
   const ranOnce = useRef(false);
+  const navigate = useNavigate();
 
   // Load new puzzle
   const loadPuzzle = async () => {
@@ -33,11 +35,14 @@ export default function Game() {
     if (ranOnce.current) return;
     ranOnce.current = true;
 
-    getMe()
-      .then((res) => setScore(res.data.score))
-      .catch(() => {});
+    const initializeGame = async () => {
+      await getMe()
+        .then((res) => setScore(res.data.score))
+        .catch(() => { });
 
-    loadPuzzle();
+      await loadPuzzle();
+    };
+    initializeGame();
   }, []);
 
   // Timer countdown
@@ -52,18 +57,19 @@ export default function Game() {
     return () => clearInterval(interval);
   }, [puzzle, isLocked]);
 
-  // Handle timer reaching zero
+  // When timer reaches 0
   useEffect(() => {
-    if (!puzzle) return;
-    if (isLocked) return;
+    if (!puzzle || isLocked) return;
 
     if (timeLeft <= 0) {
       setIsLocked(true);
       setMsg("⏱️ Time's up! Loading next puzzle...");
 
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         loadPuzzle();
       }, 1200);
+
+      return () => clearTimeout(timeout);
     }
   }, [timeLeft, puzzle, isLocked]);
 
@@ -77,7 +83,6 @@ export default function Game() {
 
     try {
       const res = await submitAnswer(puzzle.puzzleId, answer);
-
       setScore(res.data.score);
 
       if (res.data.isCorrect) {
@@ -93,38 +98,47 @@ export default function Game() {
   };
 
   return (
-    <div style={{ padding: 40 }}>
-      <h2>🍌 Banana Puzzle Game</h2>
+    <div className="page-container" style={{ alignItems: "flex-start", paddingTop: 20 }}>
+      <div className="glass-card" style={{ width: "100%", maxWidth: 720 }}>
+        <h2
+          onClick={() => navigate("/home")}
+          style={{ cursor: "pointer" }}
+        >
+          🍌 Banana Puzzle
+        </h2>
 
-      <h3>Score: {score}</h3>
-      <h4>⏱️ Time Left: {timeLeft}s</h4>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <h3>Score: {score}</h3>
+          <p className="timer">⏱ {timeLeft}s</p>
+        </div>
 
-      <button onClick={loadPuzzle}>New Puzzle</button>
+        <button onClick={loadPuzzle} style={{ marginBottom: 16 }}>
+          New Puzzle
+        </button>
 
-      {puzzle?.image && (
-        <div style={{ marginTop: 20 }}>
+        {puzzle?.image && (
           <img
             src={`data:image/png;base64,${puzzle.image}`}
             alt="banana puzzle"
-            style={{ maxWidth: 400 }}
+            className="puzzle-img"
           />
-        </div>
-      )}
+        )}
 
-      <form onSubmit={handleSubmit} style={{ marginTop: 20 }}>
-        <input
-          placeholder="Enter missing digit (0-9)"
-          value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
-          disabled={isLocked}
-        />
+        <form onSubmit={handleSubmit} style={{ marginTop: 20, display: "flex", gap: 12 }}>
+          <input
+            placeholder="Enter missing digit (0-9)"
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            disabled={isLocked}
+            style={{ flex: 1 }}
+          />
+          <button type="submit" disabled={isLocked}>
+            Submit
+          </button>
+        </form>
 
-        <button type="submit" disabled={isLocked}>
-          Submit Answer
-        </button>
-      </form>
-
-      <p>{msg}</p>
+        {msg && <p style={{ marginTop: 16, textAlign: "center" }}>{msg}</p>}
+      </div>
     </div>
   );
 }

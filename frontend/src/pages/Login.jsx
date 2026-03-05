@@ -23,28 +23,31 @@ export default function Login() {
   };
 
   return (
-    <div style={{ padding: 40 }}>
-      <h2>🍌 Banana Game Login</h2>
-      <form onSubmit={submit} style={{ display: "grid", gap: 10, maxWidth: 300 }}>
-        <input
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button>Login</button>
-      </form>
+    <div className="page-container">
+      <div className="glass-card" style={{ minWidth: 340, maxWidth: 400 }}>
+        <h2>🍌 LOGIN</h2>
 
-      <p>{msg}</p>
+        <form onSubmit={submit} style={{ display: "grid", gap: 14 }}>
+          <input
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            placeholder="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button type="submit">Enter Jungle</button>
+        </form>
 
-      <p>
-        No account? <Link to="/register">Register</Link>
-      </p>
+        {msg && <p style={{ marginTop: 16, textAlign: "center" }}>{msg}</p>}
+
+        <p style={{ marginTop: 20, textAlign: "center" }}>
+          No account? <Link to="/register">Register</Link>
+        </p>
+      </div>
     </div>
   );
 }
