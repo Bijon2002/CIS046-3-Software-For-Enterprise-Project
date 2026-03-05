@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getPuzzle, submitAnswer } from "../api/game";
+import { getMe } from "../api/game";
 
 export default function Game() {
   const [puzzle, setPuzzle] = useState(null);
@@ -14,13 +15,29 @@ export default function Game() {
       const res = await getPuzzle();
       setPuzzle(res.data);
       setMsg("");
-    } catch (err) {
+    } catch {
       setMsg("Failed to load puzzle");
     }
   };
 
   useEffect(() => {
-    loadPuzzle();
+    const initializeGame = async () => {
+      await loadPuzzle();
+    };
+    initializeGame();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getMe();
+        setScore(res.data.score);
+      } catch {
+        // Handle error if needed
+      }
+      await loadPuzzle();
+    };
+    fetchData();
   }, []);
 
   const handleSubmit = async (e) => {

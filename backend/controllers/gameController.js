@@ -47,6 +47,16 @@ exports.getPuzzle = async (req, res) => {
   }
 };
 
+exports.me = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select("email score");
+    res.json(user);
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
 exports.submitAnswer = async (req, res) => {
   try {
     const { puzzleId, answer } = req.body;
