@@ -4,6 +4,8 @@ import Register from "./pages/Register.jsx";
 import Game from "./pages/Game";
 import Leaderboard from "./pages/Leaderboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import History from "./pages/History";
+// import ProtectedRoute from "./components/ProtectedRoute";
 
 
 export default function App() {
@@ -21,6 +23,14 @@ export default function App() {
     </ProtectedRoute>
   }
 />
+<Route
+  path="/history"
+  element={
+    <ProtectedRoute>
+      <History />
+    </ProtectedRoute>
+  }
+/>
 
 <Route path="/leaderboard" element={<Leaderboard />} />
 
@@ -29,3 +39,12 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
+{/* <Route
+  path="/history"
+  element={
+    <ProtectedRoute>
+      <History />
+    </ProtectedRoute>
+  }
+/> */}
