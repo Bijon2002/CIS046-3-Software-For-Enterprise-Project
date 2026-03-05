@@ -103,3 +103,16 @@ exports.leaderboard = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+exports.history = async (req, res) => {
+  try {
+    const attempts = await Attempt.find({ user: req.userId })
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .select("puzzleId answer correctAnswer isCorrect createdAt");
+
+    res.json(attempts);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};

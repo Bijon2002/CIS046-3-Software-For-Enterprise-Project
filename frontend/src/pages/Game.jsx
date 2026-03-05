@@ -7,6 +7,7 @@ export default function Game() {
   const [answer, setAnswer] = useState("");
   const [msg, setMsg] = useState("");
   const [score, setScore] = useState(0);
+  
 
   const loadPuzzle = async () => {
     setMsg("Loading new puzzle...");
