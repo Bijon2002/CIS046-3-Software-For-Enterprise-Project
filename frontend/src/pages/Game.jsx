@@ -104,7 +104,7 @@ export default function Game() {
           onClick={() => navigate("/home")}
           style={{ cursor: "pointer" }}
         >
-          🍌 Banana Puzzle
+          🍌 Banana Brain Quest
         </h2>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
@@ -119,7 +119,7 @@ export default function Game() {
         {puzzle?.image && (
           <img
             src={`data:image/png;base64,${puzzle.image}`}
-            alt="banana puzzle"
+            alt="banana brain quest"
             className="puzzle-img"
           />
         )}

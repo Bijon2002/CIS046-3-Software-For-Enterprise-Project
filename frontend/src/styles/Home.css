@@ -1,6 +1,111 @@
 /* ===== Home Screen — Premium Jungle Theme ===== */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
+/* ---------- Intro Video Screen ---------- */
+.intro-video-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.intro-video-screen.fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.intro-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-mute-btn {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  border-radius: 50%;
+  color: #FFD700;
+  font-size: 1.4rem;
+  cursor: pointer;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  padding: 0;
+  animation: skipBtnFadeIn 0.5s ease both;
+}
+
+.video-mute-btn:hover {
+  background: rgba(212, 160, 23, 0.3);
+  border-color: #FFD700;
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+.skip-intro-btn {
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.75rem;
+  padding: 14px 28px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #FFD700;
+  border: 2px solid rgba(255, 215, 0, 0.5);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+  z-index: 10001;
+  animation: skipBtnFadeIn 1s ease 0.5s both;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.skip-intro-btn:hover {
+  background: rgba(212, 160, 23, 0.3);
+  border-color: #FFD700;
+  box-shadow: 0 4px 25px rgba(255, 215, 0, 0.4);
+  transform: translateY(-2px) scale(1.05);
+}
+
+@keyframes skipBtnFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .skip-intro-btn {
+    bottom: 24px;
+    right: 24px;
+    font-size: 0.6rem;
+    padding: 10px 20px;
+  }
+}
+
 /* ---------- Full-screen background ---------- */
 .home-screen {
   position: relative;
