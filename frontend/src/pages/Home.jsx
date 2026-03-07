@@ -1,25 +1,78 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingScreen from "../components/LoadingScreen";
 import { useMusic } from "../context/MusicContext";
 import "../styles/Home.css";
 import bananaImg from "../assets/banana.png";
+import introVideo from "../assets/rec.mp4";
 
 export default function Home() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  // Only show intro + loading on the first visit per session
+  const alreadySeen = sessionStorage.getItem("introSeen");
+  const [phase, setPhase] = useState(alreadySeen ? "ready" : "intro");
   const { musicOn, toggleMusic } = useMusic();
   const [showSettings, setShowSettings] = useState(false);
   const [sfxOn, setSfxOn] = useState(true);
+  const [introFadeOut, setIntroFadeOut] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const videoRef = useRef(null);
+
+  // Skip or end intro video → go to loading screen
+  const handleIntroEnd = useCallback(() => {
+    if (phase !== "intro") return;
+    setIntroFadeOut(true);
+    setTimeout(() => {
+      setPhase("loading");
+    }, 500);
+  }, [phase]);
 
   const handleLoadingComplete = useCallback(() => {
-    setLoading(false);
+    sessionStorage.setItem("introSeen", "true");
+    setPhase("ready");
+  }, []);
+
+  // Toggle mute/unmute on the intro video
+  const handleToggleMute = useCallback(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
+    }
   }, []);
 
   return (
     <>
-      {/* Loading Screen */}
-      {loading && <LoadingScreen onComplete={handleLoadingComplete} />}
+      {/* Phase 1: Intro Video */}
+      {phase === "intro" && (
+        <div className={`intro-video-screen ${introFadeOut ? "fade-out" : ""}`}>
+          <video
+            ref={videoRef}
+            className="intro-video"
+            src={introVideo}
+            autoPlay
+            muted
+            playsInline
+            onEnded={handleIntroEnd}
+          />
+          <button
+            className="video-mute-btn"
+            onClick={handleToggleMute}
+            title={isMuted ? "Unmute" : "Mute"}
+          >
+            {isMuted ? "🔇" : "🔊"}
+          </button>
+          <button
+            className="skip-intro-btn"
+            onClick={handleIntroEnd}
+            id="skip-intro-btn"
+          >
+            Skip Intro ⏭
+          </button>
+        </div>
+      )}
+
+      {/* Phase 2: Loading Screen */}
+      {phase === "loading" && <LoadingScreen onComplete={handleLoadingComplete} />}
 
       {/* Home Screen */}
       <div className="home-screen">
@@ -51,7 +104,7 @@ export default function Home() {
 
           {/* Title */}
           <h1 className="home-title">
-            BANANA<br />PUZZLE
+            BANANA<br />BRAIN QUEST
           </h1>
           <p className="home-subtitle">🌿 Jungle Adventure 🌿</p>
 
