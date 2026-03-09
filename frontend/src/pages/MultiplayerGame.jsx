@@ -29,9 +29,9 @@ export default function MultiplayerGame() {
 
     const [players, setPlayers] = useState(initialRoomData?.players || []);
     const [timeLeft, setTimeLeft] = useState(initialRoomData?.timer || 60);
-    const [puzzle, setPuzzle] = useState({ q: "Loading...", a: 0 });
+    const [puzzle, setPuzzle] = useState(null);
     const [answer, setAnswer] = useState("");
-    const [msg, setMsg] = useState("");
+    const [msg, setMsg] = useState("Loading...");
     const [phase, setPhase] = useState("playing"); // playing | gameover
     const [gameResult, setGameResult] = useState(null);
 
@@ -82,8 +82,10 @@ export default function MultiplayerGame() {
 
     const loadPuzzle = async () => {
         try {
+            setMsg("Loading...");
             const p = await getPuzzle(); // Always use medium for multiplayer (API handles it)
             setPuzzle(p.data);
+            setMsg("");
             setAnswer("");
             if (inputRef.current) inputRef.current.focus();
         } catch (err) {
@@ -114,26 +116,34 @@ export default function MultiplayerGame() {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!answer) return;
+        if (!answer || !puzzle) return;
 
-        if (parseInt(answer, 10) === puzzle?.a) {
-            // Correct! Add points and tell server
-            setMsg("Correct! +10");
-            setPlayers(currentPlayers => {
-                const updated = [...currentPlayers];
-                const meIdx = updated.findIndex(p => p.id === socket.id);
-                if (meIdx !== -1) {
-                    updated[meIdx].score += 10;
-                    socket.emit("updateScore", { roomCode, score: updated[meIdx].score });
-                }
-                return updated;
-            });
-            loadPuzzle();
-        } else {
-            setMsg("❌ Wrong Answer!");
-            setAnswer("");
+        setMsg("Checking...");
+        try {
+            const res = await submitAnswer(puzzle.puzzleId, answer);
+
+            if (res.data.isCorrect) {
+                // Correct! Add points and tell server
+                setMsg("Correct! +10");
+                setPlayers(currentPlayers => {
+                    const updated = [...currentPlayers];
+                    const meIdx = updated.findIndex(p => p.id === socket.id);
+                    if (meIdx !== -1) {
+                        updated[meIdx].score += 10;
+                        socket.emit("updateScore", { roomCode, score: updated[meIdx].score });
+                    }
+                    return updated;
+                });
+                // Wait briefly then load next
+                setTimeout(loadPuzzle, 800);
+            } else {
+                setMsg(`❌ Wrong! The correct answer was ${res.data.correctAnswer}`);
+                setAnswer("");
+            }
+        } catch (err) {
+            setMsg("Submission failed");
         }
     };
 
@@ -143,58 +153,73 @@ export default function MultiplayerGame() {
     const opponent = players.find(p => p.id !== socket.id) || { nickname: "Waiting...", score: 0, avatar: "🐒" };
 
     return (
-        <div className="page-container" style={{ paddingTop: 20 }}>
-            {/* SCORES HEADER */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", maxWidth: 800, marginBottom: 20 }}>
-                {/* Local Player Box */}
-                <div style={{ background: "rgba(0,0,0,0.6)", border: "2px solid #FFD700", padding: "10px 20px", borderRadius: 12, display: "flex", alignItems: "center", gap: 12, flex: 1 }}>
+        <div className="page-container" style={{ minHeight: "calc(100vh - 80px)", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: 10, paddingBottom: 10, gap: 16 }}>
+
+            {/* CENTER TITLE */}
+            <div style={{ width: "100%", textAlign: "center", marginBottom: 10 }}>
+                <h2 style={{ margin: "0", fontSize: "2.4rem", color: "#FFD700", textShadow: "0 4px 15px rgba(0,0,0,0.6)", fontFamily: "'Press Start 2P', monospace" }}>🍌 Banana Brain Quest</h2>
+            </div>
+
+            {/* 1. TOP VS DASHBOARD RIBBON */}
+            <div className="glass-card" style={{ width: "100%", maxWidth: 1000, padding: "16px 30px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16, position: "relative", overflow: "hidden" }}>
+
+                {/* BG Glow Effect */}
+                <div style={{ position: "absolute", top: 0, left: "-50%", width: "200%", height: "100%", background: "linear-gradient(90deg, rgba(255,215,0,0.05) 0%, rgba(255,107,107,0.05) 100%)", pointerEvents: "none" }}></div>
+
+                {/* Local Player left side */}
+                <div style={{ display: "flex", alignItems: "center", gap: 16, zIndex: 1, flex: 1, minWidth: 200 }}>
                     <PlayerAvatar pic={me?.avatar} nickname={me?.nickname} />
-                    <div>
-                        <div style={{ color: "#FFD700", fontSize: "0.8rem" }}>{me?.nickname || "You"}</div>
-                        <div style={{ color: "#7CFC00", fontSize: "1.5rem", fontWeight: "bold" }}>{me?.score || 0} pts</div>
+                    <div style={{ textAlign: "left" }}>
+                        <div style={{ color: "#FFD700", fontSize: "1rem", fontWeight: "bold", textTransform: "uppercase", letterSpacing: 1 }}>{me?.nickname || "You"}</div>
+                        <div style={{ color: "#7CFC00", fontSize: "2rem", fontWeight: "900", textShadow: "0 2px 10px rgba(124, 252, 0, 0.4)" }}>{me?.score || 0} pts</div>
                     </div>
                 </div>
 
-                {/* VS / Timer */}
-                <div style={{ margin: "0 20px", textAlign: "center" }}>
-                    <div style={{ color: "rgba(205,185,144,0.6)", fontSize: "0.8rem", marginBottom: 5 }}>ROOM: {roomCode}</div>
-                    <div style={{ color: timeLeft <= 10 ? "#FF6B6B" : "#FFF", fontSize: "2rem", fontFamily: "'Press Start 2P', monospace", minWidth: 100 }}>
-                        {timeLeft}s
+                {/* Center Control / VS / Timer */}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, zIndex: 1 }}>
+                    <div style={{ color: "#FFF", fontSize: "0.8rem", fontWeight: "bold", background: "rgba(0,0,0,0.5)", padding: "6px 16px", borderRadius: 20, letterSpacing: 2, border: "1px solid rgba(255,255,255,0.1)" }}>ROOM: {roomCode}</div>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+                        <div style={{ height: "2px", width: "40px", background: "linear-gradient(90deg, transparent, #FFD700)" }}></div>
+                        <div style={{ color: "#FFD700", fontSize: "2.5rem", fontWeight: "900", fontStyle: "italic", textShadow: "0 4px 15px rgba(255, 215, 0, 0.5)" }}>VS</div>
+                        <div style={{ height: "2px", width: "40px", background: "linear-gradient(270deg, transparent, #FFD700)" }}></div>
                     </div>
-                    <div style={{ color: "#FFD700", fontSize: "1.2rem", fontWeight: "bold", marginTop: 5 }}>VS</div>
+
+                    <div style={{ color: timeLeft <= 10 ? "#FF6B6B" : "#FFF", fontSize: "2rem", fontFamily: "'Press Start 2P', monospace", background: "rgba(0,0,0,0.6)", padding: "10px 20px", borderRadius: 12, border: timeLeft <= 10 ? "2px solid #FF6B6B" : "2px solid rgba(255,255,255,0.2)", boxShadow: timeLeft <= 10 ? "0 0 20px rgba(255,107,107,0.4)" : "none" }}>
+                        ⏱ {timeLeft}s
+                    </div>
                 </div>
 
-                {/* Opponent Box */}
-                <div style={{ background: "rgba(0,0,0,0.6)", border: "2px solid #FF6B6B", padding: "10px 20px", borderRadius: 12, display: "flex", alignItems: "center", gap: 12, flex: 1, flexDirection: "row-reverse", textAlign: "right" }}>
-                    <PlayerAvatar pic={opponent.avatar} nickname={opponent.nickname} />
+                {/* Opponent Box right side */}
+                <div style={{ display: "flex", alignItems: "center", gap: 16, flexDirection: "row-reverse", textAlign: "right", zIndex: 1, flex: 1, minWidth: 200 }}>
+                    <PlayerAvatar pic={opponent?.avatar} nickname={opponent?.nickname} />
                     <div>
-                        <div style={{ color: "#FF6B6B", fontSize: "0.8rem" }}>{opponent.nickname}</div>
-                        <div style={{ color: "#7CFC00", fontSize: "1.5rem", fontWeight: "bold" }}>{opponent.score || 0} pts</div>
+                        <div style={{ color: "#FF6B6B", fontSize: "1rem", fontWeight: "bold", textTransform: "uppercase", letterSpacing: 1 }}>{opponent?.nickname}</div>
+                        <div style={{ color: "#7CFC00", fontSize: "2rem", fontWeight: "900", textShadow: "0 2px 10px rgba(124, 252, 0, 0.4)" }}>{opponent?.score || 0} pts</div>
                     </div>
                 </div>
             </div>
 
-            {/* GAME AREA */}
-            <div className="glass-card" style={{ maxWidth: 600, width: "100%", textAlign: "center", opacity: phase === "gameover" ? 0.5 : 1 }}>
-                <h2 style={{ fontSize: "2.5rem", margin: "30px 0", color: "#FFD700" }}>
-                    {puzzle?.q} = ?
-                </h2>
+            {/* MAIN GAME INTERFACE */}
+            <div className="glass-card" style={{ maxWidth: 800, width: "100%", textAlign: "center", opacity: phase === "gameover" ? 0.5 : 1, position: "relative", zIndex: 5, padding: "24px 20px" }}>
 
-                <form onSubmit={handleSubmit}>
+                {puzzle?.image && (
+                    <img src={`data:image/png;base64,${puzzle.image}`} alt="banana brain quest" className="puzzle-img" style={{ margin: "10px auto", display: "block", maxHeight: "35vh", objectFit: "contain" }} />
+                )}
+
+                <form onSubmit={handleSubmit} style={{ marginTop: 10, display: "flex", gap: 12, width: "100%", maxWidth: 500, margin: "0 auto" }}>
                     <input
                         ref={inputRef}
                         type="number"
+                        placeholder="Digit (0-9)"
                         value={answer}
                         onChange={(e) => setAnswer(e.target.value)}
                         disabled={phase !== "playing"}
                         autoFocus
                         style={{
-                            fontSize: "2rem",
-                            width: "100%",
-                            maxWidth: 300,
+                            fontSize: "1.5rem",
+                            flex: 1,
                             textAlign: "center",
-                            padding: "16px",
-                            marginBottom: 16,
                             background: "rgba(0,0,0,0.5)",
                             color: "#FFF",
                             border: "2px solid #FFD700",
@@ -202,6 +227,7 @@ export default function MultiplayerGame() {
                             fontFamily: "'Press Start 2P', monospace"
                         }}
                     />
+                    <button type="submit" disabled={phase !== "playing"} style={{ background: "linear-gradient(90deg, #9C27B0, #E91E63)", fontWeight: "bold", letterSpacing: 1, padding: "0 24px", fontSize: "1.1rem" }}>🦍 GO BANANAS!</button>
                 </form>
 
                 <div style={{ minHeight: "40px", color: msg.includes("❌") ? "#FF6B6B" : "#7CFC00", fontSize: "1rem" }}>
