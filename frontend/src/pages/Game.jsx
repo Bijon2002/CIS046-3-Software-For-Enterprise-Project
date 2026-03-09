@@ -58,6 +58,18 @@ function PlayerAvatar({ pic, nickname, cls = "sidebar-avatar-img", emojiCls = "s
 export default function Game() {
   /* Phase */
   const [phase, setPhase] = useState("select");
+  const [showIntro, setShowIntro] = useState(false);
+
+  useEffect(() => {
+    if (!localStorage.getItem("bananaBrainIntro")) {
+      setShowIntro(true);
+    }
+  }, []);
+
+  const closeIntro = () => {
+    localStorage.setItem("bananaBrainIntro", "true");
+    setShowIntro(false);
+  };
   const [diffKey, setDiffKey] = useState(null);
   const [difficulty, setDifficulty] = useState(null);
 
@@ -397,119 +409,145 @@ export default function Game() {
 
   /* ---- PLAYING ---- */
   return (
-    <div className="page-container" style={{ minHeight: "calc(100vh - 80px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "10px" }}>
+    <>
+      {showIntro && (
+        <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0,0,0,0.85)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center", backdropFilter: "blur(10px)" }}>
+          <div className="glass-card" style={{ maxWidth: 550, width: "90%", padding: "40px 30px", textAlign: "center", border: "2px solid #FFD700", animation: "cardFadeIn 0.3s ease-out", boxShadow: "0 20px 50px rgba(0,0,0,0.9)" }}>
+            <h2 style={{ color: "#FFD700", fontSize: "2.4rem", marginBottom: 20, fontFamily: "'Press Start 2P', monospace", textShadow: "0 4px 10px rgba(0,0,0,0.8)" }}>🍌 HOW TO PLAY</h2>
 
-      {/* 🎮 THE UNIFIED GAME CONSOLE 🎮 */}
-      <div className="glass-card game-console-wrapper" style={{ width: "100%", maxWidth: "1000px", padding: 0, display: "flex", flexDirection: "row", overflow: "hidden", borderRadius: "24px", boxShadow: "0 25px 60px rgba(0,0,0,0.8)", border: "2px solid rgba(255, 215, 0, 0.4)", background: "rgba(20, 20, 20, 0.4)" }}>
-
-        {/* ── LEFT SIDE: Player Command Center ── */}
-        <div style={{ width: "260px", background: "rgba(0,0,0,0.75)", display: "flex", flexDirection: "column", padding: "30px 20px", borderRight: "1px solid rgba(255,215,0,0.2)" }}>
-
-          {/* Avatar & Name */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 30 }}>
-            <div className="sidebar-avatar-wrap" style={{ transform: "scale(1.2)", marginBottom: 15 }}>
-              <PlayerAvatar pic={profilePic} nickname={nickname} />
-              {rank?.current?.icon && <span className="sidebar-rank-badge">{rank.current.icon}</span>}
+            <div style={{ color: "#FFF", fontSize: "1.2rem", lineHeight: "1.6", textAlign: "left", marginBottom: 30, background: "rgba(0,0,0,0.4)", padding: "20px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.1)" }}>
+              <p style={{ marginTop: 0 }}>Welcome to <b>Banana Brains</b>!</p>
+              <ul style={{ paddingLeft: 20, margin: "15px 0" }}>
+                <li style={{ marginBottom: 12 }}><b>Find the Pattern:</b> Look at the puzzle and figure out the missing digit (0-9).</li>
+                <li style={{ marginBottom: 12 }}><b>Type & Submit:</b> Enter the number and click <b>🦍 GO BANANAS!</b></li>
+                <li style={{ marginBottom: 12 }}><b>Race the Clock:</b> The faster you solve, the more points you get.</li>
+                <li style={{ marginBottom: 12 }}><b>Survive:</b> Don't run out of brains 🧠 (lives)!</li>
+                <li style={{ marginBottom: 0 }}><b>Level Up:</b> Earn XP to climb ranks and unlock new badges.</li>
+              </ul>
+              <p style={{ color: "#FFD700", textAlign: "center", fontWeight: "bold", fontSize: "1.3rem", marginTop: 20, marginBottom: 0 }}>Good luck, {nickname || "Player"}!</p>
             </div>
-            <div style={{ color: "#FFD700", fontSize: "1.2rem", fontWeight: "bold", textTransform: "uppercase", letterSpacing: 1, textAlign: "center" }}>{nickname}</div>
-            {rank?.current && <div style={{ color: "#AAA", fontSize: "0.85rem", marginTop: 4 }}>{rank.current.name}</div>}
 
-            {/* XP Track */}
-            <div style={{ width: "100%", marginTop: 15 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: "#FFD700", marginBottom: 5 }}>
-                <span>⭐ {xp} XP</span>
-                {rank?.next && <span>{rank.next.name}</span>}
-              </div>
-              <div className="sidebar-xp-track" style={{ height: 6 }}>
-                <div className="sidebar-xp-fill" style={{ width: `${xpProgress}%`, background: "linear-gradient(90deg, #FFD700, #FFA500)" }} />
-              </div>
-            </div>
+            <button onClick={closeIntro} style={{ background: "linear-gradient(90deg, #4CAF50, #2E7D32)", color: "#FFF", fontWeight: "bold", fontSize: "1.4rem", padding: "16px 40px", borderRadius: "16px", border: "none", cursor: "pointer", letterSpacing: 2, textTransform: "uppercase", boxShadow: "0 8px 25px rgba(76, 175, 80, 0.5)", transition: "transform 0.2s" }} onMouseOver={(e) => e.target.style.transform = "scale(1.05)"} onMouseOut={(e) => e.target.style.transform = "scale(1)"}>
+              Let's Go!
+            </button>
           </div>
-
-          <div style={{ height: "1px", background: "rgba(255,255,255,0.1)", marginBottom: 20 }}></div>
-
-          {/* Quick Stats Grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: "auto" }}>
-            <div style={{ background: "rgba(0,0,0,0.4)", padding: "12px", borderRadius: 12, textAlign: "center", border: "1px solid rgba(255,255,255,0.05)" }}>
-              <div style={{ fontSize: "1.5rem", marginBottom: 4 }}>🏆</div>
-              <div style={{ fontSize: "1.2rem", color: "#FFF", fontWeight: "bold" }}>{highestScore}</div>
-              <div style={{ fontSize: "0.7rem", color: "#AAA", textTransform: "uppercase" }}>Best</div>
-            </div>
-            <div style={{ background: "rgba(0,0,0,0.4)", padding: "12px", borderRadius: 12, textAlign: "center", border: "1px solid rgba(255,255,255,0.05)" }}>
-              <div style={{ fontSize: "1.5rem", marginBottom: 4 }}>🍒</div>
-              <div style={{ fontSize: "1.2rem", color: "#FF6B6B", fontWeight: "bold" }}>{cherries}</div>
-              <div style={{ fontSize: "0.7rem", color: "#AAA", textTransform: "uppercase" }}>Vault</div>
-            </div>
-          </div>
-
-          <button onClick={loadPuzzle} style={{ marginTop: 20, width: "100%", background: "linear-gradient(90deg, #FF9800, #F44336)", fontSize: "1rem", fontWeight: "bold", padding: "14px", borderRadius: "12px", border: "none", cursor: "pointer", color: "#FFF", boxShadow: "0 4px 15px rgba(244, 67, 54, 0.4)", textTransform: "uppercase", letterSpacing: 1, transition: "transform 0.2s" }} onMouseOver={(e) => e.target.style.transform = "scale(1.05)"} onMouseOut={(e) => e.target.style.transform = "scale(1)"}>
-            🔄 New Puzzle
-          </button>
         </div>
+      )}
 
-        {/* ── RIGHT SIDE: The Live Game Arena ── */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative" }}>
+      <div className="page-container" style={{ minHeight: "calc(100vh - 80px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "10px" }}>
 
-          {/* Header Bar */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 30px", background: "linear-gradient(180deg, rgba(0,0,0,0.6) 0%, transparent 100%)", zIndex: 10 }}>
+        {/* 🎮 THE UNIFIED GAME CONSOLE 🎮 */}
+        <div className="glass-card game-console-wrapper" style={{ width: "100%", maxWidth: "1000px", padding: 0, display: "flex", flexDirection: "row", overflow: "hidden", borderRadius: "24px", boxShadow: "0 25px 60px rgba(0,0,0,0.8)", border: "2px solid rgba(255, 215, 0, 0.4)", background: "rgba(20, 20, 20, 0.4)" }}>
 
-            <div>
-              <h2 onClick={() => navigate("/home")} style={{ color: "#FFD700", margin: 0, textShadow: "0 4px 15px rgba(0,0,0,0.8)", fontSize: "1.8rem", cursor: "pointer", fontFamily: "'Press Start 2P', monospace" }}>🍌 Banana Brains</h2>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8 }}>
-                <span className={`difficulty-badge ${difficulty?.color}`} style={{ fontSize: "0.75rem", padding: "4px 8px", margin: 0, letterSpacing: 1 }}>{difficulty?.label}</span>
-                <span style={{ color: "#7CFC00", fontWeight: "bold", fontSize: "1.1rem", textShadow: "0 2px 5px rgba(0,0,0,0.5)" }}>Score: {matchScore}</span>
+          {/* ── LEFT SIDE: Player Command Center ── */}
+          <div style={{ width: "260px", background: "rgba(0,0,0,0.75)", display: "flex", flexDirection: "column", padding: "30px 20px", borderRight: "1px solid rgba(255,215,0,0.2)" }}>
+
+            {/* Avatar & Name */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 30 }}>
+              <div className="sidebar-avatar-wrap" style={{ transform: "scale(1.2)", marginBottom: 15 }}>
+                <PlayerAvatar pic={profilePic} nickname={nickname} />
+                {rank?.current?.icon && <span className="sidebar-rank-badge">{rank.current.icon}</span>}
+              </div>
+              <div style={{ color: "#FFD700", fontSize: "1.2rem", fontWeight: "bold", textTransform: "uppercase", letterSpacing: 1, textAlign: "center" }}>{nickname}</div>
+              {rank?.current && <div style={{ color: "#AAA", fontSize: "0.85rem", marginTop: 4 }}>{rank.current.name}</div>}
+
+              {/* XP Track */}
+              <div style={{ width: "100%", marginTop: 15 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: "#FFD700", marginBottom: 5 }}>
+                  <span>⭐ {xp} XP</span>
+                  {rank?.next && <span>{rank.next.name}</span>}
+                </div>
+                <div className="sidebar-xp-track" style={{ height: 6 }}>
+                  <div className="sidebar-xp-fill" style={{ width: `${xpProgress}%`, background: "linear-gradient(90deg, #FFD700, #FFA500)" }} />
+                </div>
               </div>
             </div>
 
-            {/* Dynamic Timer Display */}
-            <div className={`game-timer ${timerClass()}`} style={{ fontSize: "2.4rem", color: difficulty?.timer ? "#FFF" : "#FFD700", fontWeight: "900", fontFamily: "'Press Start 2P', monospace", textShadow: "0 4px 15px rgba(0,0,0,0.8)", background: "rgba(0,0,0,0.5)", padding: "10px 20px", borderRadius: 16, border: "2px solid rgba(255,255,255,0.1)" }}>
-              {difficulty?.timer ? `${timeLeft}s` : "∞"}
-            </div>
-          </div>
+            <div style={{ height: "1px", background: "rgba(255,255,255,0.1)", marginBottom: 20 }}></div>
 
-          {/* Center Puzzle Display */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "10px 20px" }}>
-            {puzzle?.image ? (
-              <img src={`data:image/png;base64,${puzzle.image}`} alt="puzzle" style={{ maxHeight: "40vh", objectFit: "contain", filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.5))", transform: "scale(1.05)" }} />
-            ) : (
-              <div style={{ color: "#FFF", fontSize: "1.5rem" }}>Loading Next Puzzle...</div>
-            )}
-          </div>
-
-          {/* Feedback Messsage */}
-          <div style={{ position: "absolute", bottom: "110px", width: "100%", textAlign: "center", pointerEvents: "none" }}>
-            {msg && <span className={`game-msg ${msgType}`} style={{ display: "inline-block", background: "rgba(0,0,0,0.8)", padding: "8px 20px", borderRadius: 20 }}>{msg}</span>}
-          </div>
-
-          {/* Bottom Action Footer */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 30px", background: "rgba(0,0,0,0.6)", borderTop: "1px solid rgba(255,215,0,0.1)", backdropFilter: "blur(10px)" }}>
-
-            {/* Lives Display */}
-            <div className="lives-bar" style={{ gap: 8, margin: 0 }}>
-              {Array.from({ length: difficulty?.lives || 0 }).map((_, i) => (
-                <span key={i} className={`life-icon ${i >= lives ? "lost" : ""} ${i === lostIndex ? "lost" : ""}`} style={i >= lives && i !== lostIndex ? { opacity: 0, transform: "scale(0)" } : { fontSize: "1.8rem", filter: "drop-shadow(0 2px 5px rgba(0,0,0,0.5))" }}>🧠</span>
-              ))}
+            {/* Quick Stats Grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: "auto" }}>
+              <div style={{ background: "rgba(0,0,0,0.4)", padding: "12px", borderRadius: 12, textAlign: "center", border: "1px solid rgba(255,255,255,0.05)" }}>
+                <div style={{ fontSize: "1.5rem", marginBottom: 4 }}>🏆</div>
+                <div style={{ fontSize: "1.2rem", color: "#FFF", fontWeight: "bold" }}>{highestScore}</div>
+                <div style={{ fontSize: "0.7rem", color: "#AAA", textTransform: "uppercase" }}>Best</div>
+              </div>
+              <div style={{ background: "rgba(0,0,0,0.4)", padding: "12px", borderRadius: 12, textAlign: "center", border: "1px solid rgba(255,255,255,0.05)" }}>
+                <div style={{ fontSize: "1.5rem", marginBottom: 4 }}>🍒</div>
+                <div style={{ fontSize: "1.2rem", color: "#FF6B6B", fontWeight: "bold" }}>{cherries}</div>
+                <div style={{ fontSize: "0.7rem", color: "#AAA", textTransform: "uppercase" }}>Vault</div>
+              </div>
             </div>
 
-            {/* Interactive Input Form */}
-            <form onSubmit={handleSubmit} style={{ display: "flex", gap: 15 }}>
-              <input
-                placeholder="Insert 1 Digit"
-                type="number"
-                value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
-                disabled={isLocked}
-                autoFocus
-                style={{ background: "rgba(0,0,0,0.5)", border: "2px solid #FFD700", color: "#FFF", fontSize: "1.4rem", padding: "10px 20px", borderRadius: "12px", width: "160px", textAlign: "center", fontFamily: "'Press Start 2P', monospace", boxShadow: "inset 0 2px 10px rgba(0,0,0,0.5)" }}
-              />
-              <button type="submit" disabled={isLocked} style={{ background: "linear-gradient(90deg, #9C27B0, #E91E63)", color: "#FFF", fontWeight: "bold", fontSize: "1.1rem", padding: "0 30px", borderRadius: "12px", border: "none", cursor: isLocked ? "not-allowed" : "pointer", letterSpacing: 1, textTransform: "uppercase", boxShadow: "0 4px 15px rgba(233, 30, 99, 0.4)", flexShrink: 0 }}>
-                🦍 GO BANANAS!
-              </button>
-            </form>
+            <button onClick={loadPuzzle} style={{ marginTop: 20, width: "100%", background: "linear-gradient(90deg, #FF9800, #F44336)", fontSize: "1rem", fontWeight: "bold", padding: "14px", borderRadius: "12px", border: "none", cursor: "pointer", color: "#FFF", boxShadow: "0 4px 15px rgba(244, 67, 54, 0.4)", textTransform: "uppercase", letterSpacing: 1, transition: "transform 0.2s" }} onMouseOver={(e) => e.target.style.transform = "scale(1.05)"} onMouseOut={(e) => e.target.style.transform = "scale(1)"}>
+              🔄 New Puzzle
+            </button>
           </div>
 
+          {/* ── RIGHT SIDE: The Live Game Arena ── */}
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative" }}>
+
+            {/* Header Bar */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 30px", background: "linear-gradient(180deg, rgba(0,0,0,0.6) 0%, transparent 100%)", zIndex: 10 }}>
+
+              <div>
+                <h2 onClick={() => navigate("/home")} style={{ color: "#FFD700", margin: 0, textShadow: "0 4px 15px rgba(0,0,0,0.8)", fontSize: "1.8rem", cursor: "pointer", fontFamily: "'Press Start 2P', monospace" }}>🍌 Banana Brains</h2>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8 }}>
+                  <span className={`difficulty-badge ${difficulty?.color}`} style={{ fontSize: "0.75rem", padding: "4px 8px", margin: 0, letterSpacing: 1 }}>{difficulty?.label}</span>
+                  <span style={{ color: "#7CFC00", fontWeight: "bold", fontSize: "1.1rem", textShadow: "0 2px 5px rgba(0,0,0,0.5)" }}>Score: {matchScore}</span>
+                </div>
+              </div>
+
+              {/* Dynamic Timer Display */}
+              <div className={`game-timer ${timerClass()}`} style={{ fontSize: "2.4rem", color: difficulty?.timer ? "#FFF" : "#FFD700", fontWeight: "900", fontFamily: "'Press Start 2P', monospace", textShadow: "0 4px 15px rgba(0,0,0,0.8)", background: "rgba(0,0,0,0.5)", padding: "10px 20px", borderRadius: 16, border: "2px solid rgba(255,255,255,0.1)" }}>
+                {difficulty?.timer ? `${timeLeft}s` : "∞"}
+              </div>
+            </div>
+
+            {/* Center Puzzle Display */}
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "10px 20px" }}>
+              {puzzle?.image ? (
+                <img src={`data:image/png;base64,${puzzle.image}`} alt="puzzle" style={{ maxHeight: "40vh", objectFit: "contain", filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.5))", transform: "scale(1.05)" }} />
+              ) : (
+                <div style={{ color: "#FFF", fontSize: "1.5rem" }}>Loading Next Puzzle...</div>
+              )}
+            </div>
+
+            {/* Feedback Messsage */}
+            <div style={{ position: "absolute", bottom: "110px", width: "100%", textAlign: "center", pointerEvents: "none" }}>
+              {msg && <span className={`game-msg ${msgType}`} style={{ display: "inline-block", background: "rgba(0,0,0,0.8)", padding: "8px 20px", borderRadius: 20 }}>{msg}</span>}
+            </div>
+
+            {/* Bottom Action Footer */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 30px", background: "rgba(0,0,0,0.6)", borderTop: "1px solid rgba(255,215,0,0.1)", backdropFilter: "blur(10px)" }}>
+
+              {/* Lives Display */}
+              <div className="lives-bar" style={{ gap: 8, margin: 0 }}>
+                {Array.from({ length: difficulty?.lives || 0 }).map((_, i) => (
+                  <span key={i} className={`life-icon ${i >= lives ? "lost" : ""} ${i === lostIndex ? "lost" : ""}`} style={i >= lives && i !== lostIndex ? { opacity: 0, transform: "scale(0)" } : { fontSize: "1.8rem", filter: "drop-shadow(0 2px 5px rgba(0,0,0,0.5))" }}>🧠</span>
+                ))}
+              </div>
+
+              {/* Interactive Input Form */}
+              <form onSubmit={handleSubmit} style={{ display: "flex", gap: 15 }}>
+                <input
+                  placeholder="Insert 1 Digit"
+                  type="number"
+                  value={answer}
+                  onChange={(e) => setAnswer(e.target.value)}
+                  disabled={isLocked}
+                  autoFocus
+                  style={{ background: "rgba(0,0,0,0.5)", border: "2px solid #FFD700", color: "#FFF", fontSize: "1.4rem", padding: "10px 20px", borderRadius: "12px", width: "160px", textAlign: "center", fontFamily: "'Press Start 2P', monospace", boxShadow: "inset 0 2px 10px rgba(0,0,0,0.5)" }}
+                />
+                <button type="submit" disabled={isLocked} style={{ background: "linear-gradient(90deg, #9C27B0, #E91E63)", color: "#FFF", fontWeight: "bold", fontSize: "1.1rem", padding: "0 30px", borderRadius: "12px", border: "none", cursor: isLocked ? "not-allowed" : "pointer", letterSpacing: 1, textTransform: "uppercase", boxShadow: "0 4px 15px rgba(233, 30, 99, 0.4)", flexShrink: 0 }}>
+                  🦍 GO BANANAS!
+                </button>
+              </form>
+            </div>
+
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

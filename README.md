@@ -1,232 +1,74 @@
-# 🍌 Apea Banana
+# 🍌 Banana Brain Quest 🧠
 
-Apea Banana is a web-based puzzle game where players solve missing-number challenges generated from the Banana API.  
-The game tests logical thinking under time pressure and demonstrates modern software development concepts such as authentication, event-driven programming, interoperability with external APIs, and version control.
+![Banana Brain Quest](https://img.shields.io/badge/Status-Active-brightgreen.svg) ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 
----
-
-# 🎮 Game Concept
-
-Players are presented with a mathematical puzzle image.  
-The goal is to identify the missing number before the timer runs out.
-
-Features include:
-
-- ⏱ Timed puzzle solving
-- 🧠 Logical reasoning challenges
-- 🏆 Score tracking
-- 📜 Attempt history
-- 🌐 Integration with the Banana Puzzle API
+Welcome to **Banana Brain Quest**, a premium, competitive math puzzle game built with a stunning jungle/gold glassmorphism aesthetic! Test your pattern recognition, compete against friends in real-time, and climb the ranks from *Novice* to *Banana God*!
 
 ---
 
-# 🧩 Technologies Used
+## ✨ Features
 
-Frontend
-- React
-- React Router
-- Axios
-- Vite
+### 🎮 **Stunning Game Modes**
+* **Solo Arcade Console**: A breathtaking, unified glassmorphism dashboard. Face infinite puzzles, race against the timer, and try to beat your high score.
+* **Real-Time Multiplayer**: Compete head-to-head against other players! Features a synchronized timer, live VS dashboard, and instant win/loss condition tracking via Socket.io.
 
-Backend
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT Authentication
-- Bcrypt password hashing
+### 🏆 **Deep Gamification & Progression**
+* **XP & Ranking System**: Earn XP for solving puzzles and completing objectives. Level up through 10 distinct ranks (e.g., Novice, Adept, Master, Grandmaster).
+* **Cherries & Lives**: Earn *Cherries* 🍒 by completing objectives or playing daily. Spend them mid-game to buy extra lives (Brains 🧠) and save your run!
+* **Badges & Achievements**: Unlock unique badges for reaching milestones like "First Win" or "Speed Demon".
 
-External Service
-- Banana Puzzle API  
-  http://marcconrad.com/uob/banana/api.php
+### 📊 **Competitive Tracking**
+* **Global Leaderboards**: See where you rank among all players.
+* **Match History**: Review details of your past multiplayer and singleplayer matches in a dedicated dashboard.
 
----
-
-# 🏗 System Architecture
-
-The application follows a client–server architecture.
-
-
-React Frontend
-│
-│ HTTP API Requests
-▼
-Node.js / Express Backend
-│
-├── MongoDB (users, attempts, scores)
-│
-└── Banana Puzzle API (external puzzle generator)
-
-
-This design demonstrates interoperability between internal services and external APIs.
+### 🎨 **Premium UI/UX**
+* **Glassmorphism Aesthetic**: Beautiful transparent cards, dynamic glowing gradients, and floating intuitive interfaces.
+* **Custom Avatars**: Dynamically generated avatars via the DiceBear API or custom emojis.
+* **First-Time Tutorial**: LocalStorage powered "How to Play" modal ensuring new players grasp the mechanics immediately.
 
 ---
 
-# 🔑 Key Software Engineering Concepts
+## 🛠️ Technology Stack
 
-## Version Control
-The project is managed using Git and GitHub.  
-Different features were implemented using dedicated branches such as:
-
-- feature-auth
-- feature-history
-- feature-timer
-- feature-ui
-
-This workflow helps maintain clean code history and allows safe feature development.
+* **Frontend**: React.js, Vite, React Router, Socket.io-client
+* **Backend**: Node.js, Express, Socket.io, JWT for robust Authentication
+* **Styling**: Custom CSS3 with dynamic variables and Flexbox/CSS Grid layouts
 
 ---
 
-## Event-Driven Programming
+## 🚀 Getting Started
 
-The game uses event-driven mechanisms including:
+To run the game locally, you will need to start both the backend server and the frontend client.
 
-- Button click events
-- Form submission events
-- Timer countdown events
-- API response handling
+### Prerequisites
+* Node.js (v16 or higher recommended)
+* NPM or Yarn
 
-Example:
-
-- The puzzle timer uses a JavaScript interval event to update the countdown every second.
-- When the timer reaches zero, a new puzzle is automatically loaded.
-
----
-
-## Interoperability
-
-The system integrates with the **Banana Puzzle API**, which generates puzzle images and solutions.
-
-Example API call:
-
-
-http://marcconrad.com/uob/banana/api.php
-
-
-The backend retrieves puzzle data and sends it to the frontend for display.
-
-This demonstrates interoperability between independent software systems.
-
----
-
-## Virtual Identity
-
-User authentication is implemented using:
-
-- Email and password login
-- Password hashing with bcrypt
-- JSON Web Tokens (JWT)
-
-JWT tokens establish a virtual identity for each user and allow secure access to protected routes such as the game and attempt history.
-
----
-
-# 📂 Project Structure
-
-
-project-root
-│
-├── backend
-│ ├── controllers
-│ ├── models
-│ ├── routes
-│ ├── middleware
-│ └── server.js
-│
-├── frontend
-│ ├── src
-│ │ ├── api
-│ │ ├── components
-│ │ ├── context
-│ │ ├── pages
-│ │ └── styles
-│
-└── README.md
-
-
----
-
-# ⚙️ Installation
-
-## 1️⃣ Clone the repository
-
-
-git clone https://github.com/yourusername/apea-banana-game.git
-
-
----
-
-## 2️⃣ Backend Setup
-
-
+### 1. Start the Backend
+```bash
 cd backend
 npm install
-
-
-Create a `.env` file:
-
-
-PORT=5000
-MONGO_URI=your_mongodb_connection
-JWT_SECRET=your_secret_key
-
-
-Run backend:
-
-
 npm run dev
+```
 
-
----
-
-## 3️⃣ Frontend Setup
-
-
+### 2. Start the Frontend
+Open a new terminal window:
+```bash
 cd frontend
 npm install
 npm run dev
+```
 
-
-Open:
-
-
-http://localhost:5173
-
+The game should now be running on `http://localhost:5173`!
 
 ---
 
-# 🧪 Features Implemented
+## 🎯 How to Play
 
-✔ User registration and login  
-✔ Secure authentication using JWT  
-✔ Puzzle retrieval from Banana API  
-✔ Timed puzzle solving  
-✔ Score tracking  
-✔ Attempt history  
-✔ Leaderboard system  
+1. Choose a difficulty (Easy, Medium, Hard).
+2. Look at the visual puzzle and figure out the missing single digit (`0-9`).
+3. Enter your answer and smack the **🦍 GO BANANAS!** button.
+4. Don't run out of lives (🧠) and beat the timer (⏱) if playing on Medium/Hard! 
 
----
-
-# 📹 Assignment Video
-
-The submitted video demonstrates:
-
-- The working system
-- Code structure
-- Version control workflow
-- Event-driven programming
-- Interoperability with external APIs
-- Virtual identity and authentication
-
----
-
-# 👨‍💻 Author
-
-Bijon  
-BSc Software Engineering
-
----
-
-# 📜 License
-
-This project is developed for educational purposes.
+## 📝 License
+This project is licensed under the MIT License.
