@@ -4,16 +4,23 @@ const User = require("../models/User");
 
 exports.register = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { nickname, email, password } = req.body;
 
-    if (!email || !password) return res.status(400).json({ message: "Email & password required" });
-    if (password.length < 6) return res.status(400).json({ message: "Password must be 6+ chars" });
+    if (!nickname || !email || !password)
+      return res.status(400).json({ message: "Nickname, email & password required" });
+    if (nickname.length < 2 || nickname.length > 20)
+      return res.status(400).json({ message: "Nickname must be 2-20 characters" });
+    if (password.length < 6)
+      return res.status(400).json({ message: "Password must be 6+ chars" });
 
-    const exists = await User.findOne({ email });
-    if (exists) return res.status(400).json({ message: "User already exists" });
+    const existsEmail = await User.findOne({ email });
+    if (existsEmail) return res.status(400).json({ message: "Email already in use" });
+
+    const existsNick = await User.findOne({ nickname: { $regex: new RegExp(`^${nickname}$`, "i") } });
+    if (existsNick) return res.status(400).json({ message: "Nickname already taken" });
 
     const hashed = await bcrypt.hash(password, 10);
-    await User.create({ email, password: hashed });
+    await User.create({ nickname, email, password: hashed });
 
     res.json({ message: "Registered ✅" });
   } catch (e) {
@@ -25,7 +32,8 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) return res.status(400).json({ message: "Email & password required" });
+    if (!email || !password)
+      return res.status(400).json({ message: "Email & password required" });
 
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });

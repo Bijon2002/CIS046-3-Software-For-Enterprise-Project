@@ -1,9 +1,18 @@
 const router = require("express").Router();
 const auth = require("../middleware/authMiddleware");
-const { getPuzzle, submitAnswer, leaderboard, me, history } = require("../controllers/gameController");
+const {
+    getPuzzle, submitAnswer, leaderboard, me, history,
+    saveGameSession, getProfile,
+    useCherry, buyCherry, updateProfilePic
+} = require("../controllers/gameController");
 
 router.get("/puzzle", auth, getPuzzle);
 router.post("/submit", auth, submitAnswer);
+router.post("/session", auth, saveGameSession);
+router.get("/profile", auth, getProfile);
+router.post("/use-cherry", auth, useCherry);
+router.post("/buy-cherry", auth, buyCherry);
+router.patch("/profile-pic", auth, updateProfilePic);
 router.get("/leaderboard", leaderboard);
 router.get("/me", auth, me);
 router.get("/history", auth, history);

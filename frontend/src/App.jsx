@@ -9,6 +9,8 @@ import Register from "./pages/Register.jsx";
 import Game from "./pages/Game.jsx";
 import History from "./pages/History.jsx";
 import Leaderboard from "./pages/Leaderboard.jsx";
+import Profile from "./pages/Profile.jsx";
+import Admin from "./pages/Admin.jsx";
 
 /* Wrapper so we can conditionally hide Navbar on /home */
 function AppContent() {
@@ -43,6 +45,24 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <History />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <Admin />
             </ProtectedRoute>
           }
         />
