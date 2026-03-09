@@ -23,6 +23,8 @@ const gameRoutes = require("./routes/gameRoutes");
 
 app.use("/api/game", gameRoutes);
 
+const adminRoutes = require("./routes/adminRoutes");
+app.use("/api/admin", adminRoutes);
 
 app.get("/api/test", (req, res) => {
   res.json({ message: "Frontend ↔ Backend connected ✅" });

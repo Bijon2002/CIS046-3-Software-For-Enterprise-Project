@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 
 export default function Register() {
   const nav = useNavigate();
+  const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState("");
@@ -13,7 +14,7 @@ export default function Register() {
     setMsg("Creating account...");
 
     try {
-      await registerUser(email, password);
+      await registerUser(nickname, email, password);
       setMsg("Registered ✅ Redirecting to login...");
       setTimeout(() => nav("/login"), 1000);
     } catch (err) {
@@ -27,6 +28,11 @@ export default function Register() {
         <h2>🍌 REGISTER</h2>
 
         <form onSubmit={submit} style={{ display: "grid", gap: 14 }}>
+          <input
+            placeholder="Nickname (shown in game)"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+          />
           <input
             placeholder="Email"
             value={email}
