@@ -13,6 +13,7 @@ export default function Home() {
   const [phase, setPhase] = useState(alreadySeen ? "ready" : "intro");
   const { musicOn, toggleMusic } = useMusic();
   const [showSettings, setShowSettings] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
   const [sfxOn, setSfxOn] = useState(true);
   const [introFadeOut, setIntroFadeOut] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -115,7 +116,16 @@ export default function Home() {
               onClick={() => navigate("/game")}
               id="start-game-btn"
             >
-              🎮 Start Game
+              🎮 Solo Game
+            </button>
+
+            <button
+              className="home-btn btn-multiplayer"
+              onClick={() => navigate("/multiplayer")}
+              id="multiplayer-btn"
+              style={{ background: "linear-gradient(90deg, #9C27B0, #E040FB)" }}
+            >
+              ⚔️ Multiplayer
             </button>
 
             <button
@@ -126,13 +136,24 @@ export default function Home() {
               🏆 Leaderboards
             </button>
 
-            <button
-              className="home-btn btn-settings"
-              onClick={() => setShowSettings(true)}
-              id="settings-btn"
-            >
-              ⚙️ Settings
-            </button>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                className="home-btn btn-settings"
+                onClick={() => setShowSettings(true)}
+                id="settings-btn"
+                style={{ flex: 1 }}
+              >
+                ⚙️
+              </button>
+              <button
+                className="home-btn btn-about"
+                onClick={() => setShowAbout(true)}
+                id="about-btn"
+                style={{ flex: 1, background: "rgba(255, 255, 255, 0.15)" }}
+              >
+                ❓
+              </button>
+            </div>
           </div>
         </div>
 
@@ -144,7 +165,7 @@ export default function Home() {
               if (e.target === e.currentTarget) setShowSettings(false);
             }}
           >
-            <div className="settings-modal">
+            <div className="settings-modal" style={{ animation: "cardFadeIn 0.3s ease-out" }}>
               <h2>⚙️ SETTINGS</h2>
 
               <div className="settings-option">
@@ -169,6 +190,40 @@ export default function Home() {
                 className="settings-close-btn"
                 onClick={() => setShowSettings(false)}
                 id="settings-close-btn"
+              >
+                CLOSE
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* About Modal */}
+        {showAbout && (
+          <div
+            className="settings-overlay"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setShowAbout(false);
+            }}
+          >
+            <div className="settings-modal" style={{ maxWidth: 450, animation: "cardFadeIn 0.3s ease-out", textAlign: "center" }}>
+              <h2>🍌 ABOUT PROJECT</h2>
+
+              <p style={{ lineHeight: 1.6, color: "rgba(205,185,144,0.9)", fontSize: "0.9rem", marginBottom: 20 }}>
+                <strong>Banana Brain Quest</strong> is a fast-paced, math puzzle game designed to test your reflexes and calculation speed.
+                <br /><br />
+                Earn XP, level up your rank, collect cherries, and climb the global leaderboards. Explore head-to-head Multiplayer mode to challenge your friends!
+              </p>
+
+              <div style={{ padding: "16px", background: "rgba(212,160,23,0.1)", borderRadius: "12px", border: "1px solid rgba(212,160,23,0.2)" }}>
+                <p style={{ fontSize: "0.8rem", color: "#FFD700", marginBottom: 8, letterSpacing: 1 }}>DEVELOPED BY</p>
+                <h3 style={{ fontSize: "1.4rem", margin: 0, textShadow: "0 0 10px rgba(255,215,0,0.5)" }}>BIJON</h3>
+                <p style={{ fontSize: "0.75rem", color: "rgba(205,185,144,0.7)", marginTop: 6 }}>Full Stack Software Engineer</p>
+              </div>
+
+              <button
+                className="settings-close-btn"
+                style={{ marginTop: 24 }}
+                onClick={() => setShowAbout(false)}
               >
                 CLOSE
               </button>

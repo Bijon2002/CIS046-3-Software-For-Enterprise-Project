@@ -40,61 +40,184 @@ body {
 .navbar {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 14px 24px;
-  background: rgba(10, 8, 2, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  gap: 4px;
+  padding: 12px 24px;
+  background: rgba(10, 8, 2, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border-gold);
   color: var(--text-primary);
   font-family: var(--font-pixel);
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 100;
 }
 
-.navbar b {
-  font-size: 0.75rem;
-  color: var(--gold-light);
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
-  margin-right: auto;
+/* Brand */
+.navbar-brand {
+  font-size: 0.72rem;
+  color: var(--gold-light) !important;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.35);
+  text-decoration: none !important;
+  letter-spacing: 1px;
+  flex-shrink: 0;
 }
 
-.navbar a {
+/* Spacer pushes all links to the right */
+.navbar-spacer {
+  flex: 1;
+}
+
+/* Nav links */
+.navbar a:not(.navbar-brand):not(.nav-dropdown-item) {
   color: var(--text-secondary);
   text-decoration: none;
   padding: 6px 12px;
   border-radius: 8px;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   letter-spacing: 1px;
 }
 
-.navbar a:hover {
+.navbar a:not(.navbar-brand):not(.nav-dropdown-item):hover {
   color: var(--gold-light);
-  background: rgba(212, 160, 23, 0.15);
-  text-decoration: none;
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+  background: rgba(212, 160, 23, 0.14);
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.35);
 }
 
-.navbar button {
+/* ── Avatar button (no default button style) ── */
+.nav-profile-wrap {
+  position: relative;
+  margin-left: 8px;
+}
+
+.nav-avatar-btn {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(212, 160, 23, 0.45);
+  overflow: hidden;
+  transition: border-color 0.25s, box-shadow 0.25s;
+  background: rgba(10, 8, 2, 0.6);
+}
+
+.nav-avatar-btn:hover {
+  border-color: #D4A017;
+  box-shadow: 0 0 14px rgba(212, 160, 23, 0.35);
+}
+
+.nav-avatar-img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.nav-avatar-emoji {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+/* ── Dropdown ── */
+.nav-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 190px;
+  background: rgba(10, 8, 2, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 160, 23, 0.25);
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+  animation: dropdownIn 0.2s ease-out;
+  z-index: 200;
+}
+
+@keyframes dropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+}
+
+.nav-dropdown-header .nav-avatar-img,
+.nav-dropdown-header .nav-avatar-emoji {
+  width: 32px;
+  height: 32px;
+  font-size: 1.2rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.nav-dropdown-name {
   font-family: var(--font-pixel);
-  font-size: 0.6rem;
-  padding: 8px 14px;
-  background: rgba(180, 50, 50, 0.3);
-  border: 1px solid rgba(255, 77, 79, 0.4);
+  font-size: 0.38rem;
+  color: #FFD700;
+  word-break: break-word;
+}
+
+.nav-dropdown-divider {
+  height: 1px;
+  background: rgba(212, 160, 23, 0.15);
+  margin: 4px 0 8px;
+}
+
+.nav-dropdown-item {
+  display: block;
+  font-family: var(--font-pixel);
+  font-size: 0.42rem;
+  color: var(--text-secondary) !important;
+  padding: 8px 10px;
+  border-radius: 8px;
+  text-decoration: none !important;
+  transition: background 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.nav-dropdown-item:hover {
+  background: rgba(212, 160, 23, 0.12);
+  color: var(--gold-light) !important;
+}
+
+.nav-dropdown-logout {
+  all: unset;
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  font-family: var(--font-pixel);
+  font-size: 0.42rem;
   color: #ff6b6b;
+  padding: 8px 10px;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  letter-spacing: 1px;
+  transition: background 0.2s;
+  letter-spacing: 0.5px;
+  box-sizing: border-box;
 }
 
-.navbar button:hover {
-  background: rgba(180, 50, 50, 0.5);
-  border-color: #ff6b6b;
-  box-shadow: 0 0 12px rgba(255, 77, 79, 0.3);
+.nav-dropdown-logout:hover {
+  background: rgba(255, 107, 107, 0.12);
 }
+
 
 /* ---------- Glass Card (reusable) ---------- */
 .glass-card {

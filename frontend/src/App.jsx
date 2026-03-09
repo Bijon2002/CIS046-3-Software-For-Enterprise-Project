@@ -11,6 +11,8 @@ import History from "./pages/History.jsx";
 import Leaderboard from "./pages/Leaderboard.jsx";
 import Profile from "./pages/Profile.jsx";
 import Admin from "./pages/Admin.jsx";
+import MultiplayerLobby from "./pages/MultiplayerLobby.jsx";
+import MultiplayerGame from "./pages/MultiplayerGame.jsx";
 
 /* Wrapper so we can conditionally hide Navbar on /home */
 function AppContent() {
@@ -69,6 +71,10 @@ function AppContent() {
 
         {/* Public leaderboard */}
         <Route path="/leaderboard" element={<Leaderboard />} />
+
+        {/* Multiplayer */}
+        <Route path="/multiplayer" element={<ProtectedRoute><MultiplayerLobby /></ProtectedRoute>} />
+        <Route path="/multiplayer/play/:roomCode" element={<ProtectedRoute><MultiplayerGame /></ProtectedRoute>} />
 
         {/* Fallback */}
         <Route path="*" element={<div style={{ padding: 40 }}>Not found</div>} />
