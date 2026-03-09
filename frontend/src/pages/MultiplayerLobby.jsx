@@ -15,9 +15,21 @@ export default function MultiplayerLobby() {
     const [msg, setMsg] = useState("");
     const [waiting, setWaiting] = useState(false);
 
-    // Connect socket when mounting
+    // Player profile details
+    const [myNickname, setMyNickname] = useState("Player");
+    const [myAvatar, setMyAvatar] = useState("");
+
+    // Connect socket and fetch profile when mounting
     useEffect(() => {
         socket.connect();
+
+        // Fetch user profile
+        import("../api/auth").then(({ getProfile }) => {
+            getProfile().then(p => {
+                setMyNickname(p.data.username || "Player");
+                setMyAvatar(p.data.profilePicture || "");
+            }).catch(e => console.error("Could not fetch profile", e));
+        });
 
         // Listen for another player joining the room we created
         socket.on("gameReady", (data) => {
@@ -34,8 +46,8 @@ export default function MultiplayerLobby() {
     const handleCreateRoom = () => {
         setMsg("Creating room...");
         const payload = {
-            nickname: user?.nickname || "Guest",
-            avatar: user?.profilePic || "🐒",
+            nickname: myNickname,
+            avatar: myAvatar || "🐒",
             timerSetting
         };
 
@@ -56,8 +68,8 @@ export default function MultiplayerLobby() {
 
         const payload = {
             roomCode: roomCodeInput.toUpperCase(),
-            nickname: user?.nickname || "Guest",
-            avatar: user?.profilePic || "🐒",
+            nickname: myNickname,
+            avatar: myAvatar || "🐒",
         };
 
         socket.emit("joinRoom", payload, (response) => {

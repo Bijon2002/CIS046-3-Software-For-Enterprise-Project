@@ -397,82 +397,117 @@ export default function Game() {
 
   /* ---- PLAYING ---- */
   return (
-    <div className="game-layout">
+    <div className="page-container" style={{ minHeight: "calc(100vh - 80px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "10px" }}>
 
-      {/* ── Left Sidebar ── */}
-      <aside className="game-sidebar">
-        {/* Avatar circle */}
-        <div className="sidebar-avatar-wrap">
-          <PlayerAvatar pic={profilePic} nickname={nickname} />
-          {rank?.current?.icon && <span className="sidebar-rank-badge">{rank.current.icon}</span>}
-        </div>
+      {/* 🎮 THE UNIFIED GAME CONSOLE 🎮 */}
+      <div className="glass-card game-console-wrapper" style={{ width: "100%", maxWidth: "1000px", padding: 0, display: "flex", flexDirection: "row", overflow: "hidden", borderRadius: "24px", boxShadow: "0 25px 60px rgba(0,0,0,0.8)", border: "2px solid rgba(255, 215, 0, 0.4)", background: "rgba(20, 20, 20, 0.4)" }}>
 
-        {/* Name + rank */}
-        <div className="sidebar-nickname">{nickname}</div>
-        {rank?.current && <div className="sidebar-rank-name">{rank.current.name}</div>}
+        {/* ── LEFT SIDE: Player Command Center ── */}
+        <div style={{ width: "260px", background: "rgba(0,0,0,0.75)", display: "flex", flexDirection: "column", padding: "30px 20px", borderRight: "1px solid rgba(255,215,0,0.2)" }}>
 
-        {/* XP bar */}
-        <div className="sidebar-xp-label">⭐ {xp} XP</div>
-        <div className="sidebar-xp-track">
-          <div className="sidebar-xp-fill" style={{ width: `${xpProgress}%` }} />
-        </div>
-        {rank?.next && <div className="sidebar-xp-next">→ {rank.next.name} @ {rank.next.xp} XP</div>}
+          {/* Avatar & Name */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 30 }}>
+            <div className="sidebar-avatar-wrap" style={{ transform: "scale(1.2)", marginBottom: 15 }}>
+              <PlayerAvatar pic={profilePic} nickname={nickname} />
+              {rank?.current?.icon && <span className="sidebar-rank-badge">{rank.current.icon}</span>}
+            </div>
+            <div style={{ color: "#FFD700", fontSize: "1.2rem", fontWeight: "bold", textTransform: "uppercase", letterSpacing: 1, textAlign: "center" }}>{nickname}</div>
+            {rank?.current && <div style={{ color: "#AAA", fontSize: "0.85rem", marginTop: 4 }}>{rank.current.name}</div>}
 
-        <div className="sidebar-divider" />
-
-        {/* Stats */}
-        <div className="sidebar-stat"><span className="sidebar-stat-icon">🏆</span><span className="sidebar-stat-value">{highestScore}</span><span className="sidebar-stat-label">Best</span></div>
-        <div className="sidebar-stat"><span className="sidebar-stat-icon">🍒</span><span className="sidebar-stat-value">{cherries}</span><span className="sidebar-stat-label">Cherries</span></div>
-        <div className="sidebar-stat"><span className="sidebar-stat-icon">🎮</span><span className="sidebar-stat-value">{matchScore}</span><span className="sidebar-stat-label">Score</span></div>
-      </aside>
-
-      {/* ── Main game ── */}
-      <div className="page-container" style={{ alignItems: "flex-start", paddingTop: 20, flex: 1, minWidth: 0 }}>
-        <div className="glass-card" style={{ width: "100%", maxWidth: 720 }}>
-          {/* Title row */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-            <h2 onClick={() => navigate("/home")} style={{ cursor: "pointer", margin: 0 }}>🍌 Banana Brain Quest</h2>
-            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-              <span style={{ fontSize: "0.55rem", color: "#FF6B6B" }}>🍒 {cherries}</span>
-              <span className={`difficulty-badge ${difficulty?.color}`}>{difficulty?.label}</span>
+            {/* XP Track */}
+            <div style={{ width: "100%", marginTop: 15 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: "#FFD700", marginBottom: 5 }}>
+                <span>⭐ {xp} XP</span>
+                {rank?.next && <span>{rank.next.name}</span>}
+              </div>
+              <div className="sidebar-xp-track" style={{ height: 6 }}>
+                <div className="sidebar-xp-fill" style={{ width: `${xpProgress}%`, background: "linear-gradient(90deg, #FFD700, #FFA500)" }} />
+              </div>
             </div>
           </div>
 
-          {/* Score — Lives — Timer */}
-          <div className="game-header">
-            <h3 className="game-score">Score: {matchScore}</h3>
-            <div className="lives-bar">
+          <div style={{ height: "1px", background: "rgba(255,255,255,0.1)", marginBottom: 20 }}></div>
+
+          {/* Quick Stats Grid */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: "auto" }}>
+            <div style={{ background: "rgba(0,0,0,0.4)", padding: "12px", borderRadius: 12, textAlign: "center", border: "1px solid rgba(255,255,255,0.05)" }}>
+              <div style={{ fontSize: "1.5rem", marginBottom: 4 }}>🏆</div>
+              <div style={{ fontSize: "1.2rem", color: "#FFF", fontWeight: "bold" }}>{highestScore}</div>
+              <div style={{ fontSize: "0.7rem", color: "#AAA", textTransform: "uppercase" }}>Best</div>
+            </div>
+            <div style={{ background: "rgba(0,0,0,0.4)", padding: "12px", borderRadius: 12, textAlign: "center", border: "1px solid rgba(255,255,255,0.05)" }}>
+              <div style={{ fontSize: "1.5rem", marginBottom: 4 }}>🍒</div>
+              <div style={{ fontSize: "1.2rem", color: "#FF6B6B", fontWeight: "bold" }}>{cherries}</div>
+              <div style={{ fontSize: "0.7rem", color: "#AAA", textTransform: "uppercase" }}>Vault</div>
+            </div>
+          </div>
+
+          <button onClick={loadPuzzle} style={{ marginTop: 20, width: "100%", background: "linear-gradient(90deg, #FF9800, #F44336)", fontSize: "1rem", fontWeight: "bold", padding: "14px", borderRadius: "12px", border: "none", cursor: "pointer", color: "#FFF", boxShadow: "0 4px 15px rgba(244, 67, 54, 0.4)", textTransform: "uppercase", letterSpacing: 1, transition: "transform 0.2s" }} onMouseOver={(e) => e.target.style.transform = "scale(1.05)"} onMouseOut={(e) => e.target.style.transform = "scale(1)"}>
+            🔄 New Puzzle
+          </button>
+        </div>
+
+        {/* ── RIGHT SIDE: The Live Game Arena ── */}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative" }}>
+
+          {/* Header Bar */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 30px", background: "linear-gradient(180deg, rgba(0,0,0,0.6) 0%, transparent 100%)", zIndex: 10 }}>
+
+            <div>
+              <h2 onClick={() => navigate("/home")} style={{ color: "#FFD700", margin: 0, textShadow: "0 4px 15px rgba(0,0,0,0.8)", fontSize: "1.8rem", cursor: "pointer", fontFamily: "'Press Start 2P', monospace" }}>🍌 Banana Brains</h2>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8 }}>
+                <span className={`difficulty-badge ${difficulty?.color}`} style={{ fontSize: "0.75rem", padding: "4px 8px", margin: 0, letterSpacing: 1 }}>{difficulty?.label}</span>
+                <span style={{ color: "#7CFC00", fontWeight: "bold", fontSize: "1.1rem", textShadow: "0 2px 5px rgba(0,0,0,0.5)" }}>Score: {matchScore}</span>
+              </div>
+            </div>
+
+            {/* Dynamic Timer Display */}
+            <div className={`game-timer ${timerClass()}`} style={{ fontSize: "2.4rem", color: difficulty?.timer ? "#FFF" : "#FFD700", fontWeight: "900", fontFamily: "'Press Start 2P', monospace", textShadow: "0 4px 15px rgba(0,0,0,0.8)", background: "rgba(0,0,0,0.5)", padding: "10px 20px", borderRadius: 16, border: "2px solid rgba(255,255,255,0.1)" }}>
+              {difficulty?.timer ? `${timeLeft}s` : "∞"}
+            </div>
+          </div>
+
+          {/* Center Puzzle Display */}
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "10px 20px" }}>
+            {puzzle?.image ? (
+              <img src={`data:image/png;base64,${puzzle.image}`} alt="puzzle" style={{ maxHeight: "40vh", objectFit: "contain", filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.5))", transform: "scale(1.05)" }} />
+            ) : (
+              <div style={{ color: "#FFF", fontSize: "1.5rem" }}>Loading Next Puzzle...</div>
+            )}
+          </div>
+
+          {/* Feedback Messsage */}
+          <div style={{ position: "absolute", bottom: "110px", width: "100%", textAlign: "center", pointerEvents: "none" }}>
+            {msg && <span className={`game-msg ${msgType}`} style={{ display: "inline-block", background: "rgba(0,0,0,0.8)", padding: "8px 20px", borderRadius: 20 }}>{msg}</span>}
+          </div>
+
+          {/* Bottom Action Footer */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 30px", background: "rgba(0,0,0,0.6)", borderTop: "1px solid rgba(255,215,0,0.1)", backdropFilter: "blur(10px)" }}>
+
+            {/* Lives Display */}
+            <div className="lives-bar" style={{ gap: 8, margin: 0 }}>
               {Array.from({ length: difficulty?.lives || 0 }).map((_, i) => (
-                <span
-                  key={i}
-                  className={`life-icon ${i >= lives ? "lost" : ""} ${i === lostIndex ? "lost" : ""}`}
-                  style={i >= lives && i !== lostIndex ? { opacity: 0, transform: "scale(0)" } : {}}
-                >🧠</span>
+                <span key={i} className={`life-icon ${i >= lives ? "lost" : ""} ${i === lostIndex ? "lost" : ""}`} style={i >= lives && i !== lostIndex ? { opacity: 0, transform: "scale(0)" } : { fontSize: "1.8rem", filter: "drop-shadow(0 2px 5px rgba(0,0,0,0.5))" }}>🧠</span>
               ))}
             </div>
-            <div className={`game-timer ${timerClass()}`}>
-              {difficulty?.timer ? `⏱ ${timeLeft}s` : "∞ Relax"}
-            </div>
+
+            {/* Interactive Input Form */}
+            <form onSubmit={handleSubmit} style={{ display: "flex", gap: 15 }}>
+              <input
+                placeholder="Insert 1 Digit"
+                type="number"
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                disabled={isLocked}
+                autoFocus
+                style={{ background: "rgba(0,0,0,0.5)", border: "2px solid #FFD700", color: "#FFF", fontSize: "1.4rem", padding: "10px 20px", borderRadius: "12px", width: "160px", textAlign: "center", fontFamily: "'Press Start 2P', monospace", boxShadow: "inset 0 2px 10px rgba(0,0,0,0.5)" }}
+              />
+              <button type="submit" disabled={isLocked} style={{ background: "linear-gradient(90deg, #9C27B0, #E91E63)", color: "#FFF", fontWeight: "bold", fontSize: "1.1rem", padding: "0 30px", borderRadius: "12px", border: "none", cursor: isLocked ? "not-allowed" : "pointer", letterSpacing: 1, textTransform: "uppercase", boxShadow: "0 4px 15px rgba(233, 30, 99, 0.4)", flexShrink: 0 }}>
+                🦍 GO BANANAS!
+              </button>
+            </form>
           </div>
 
-          <button onClick={loadPuzzle} style={{ marginBottom: 16 }}>New Puzzle</button>
-
-          {puzzle?.image && (
-            <img src={`data:image/png;base64,${puzzle.image}`} alt="banana brain quest" className="puzzle-img" />
-          )}
-
-          <form onSubmit={handleSubmit} style={{ marginTop: 20, display: "flex", gap: 12 }}>
-            <input
-              placeholder="Enter missing digit (0-9)"
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              disabled={isLocked}
-              style={{ flex: 1 }}
-            />
-            <button type="submit" disabled={isLocked}>Submit</button>
-          </form>
-
-          {msg && <p className={`game-msg ${msgType}`}>{msg}</p>}
         </div>
       </div>
     </div>
