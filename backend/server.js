@@ -1,9 +1,21 @@
 require("dotenv").config();
 const express = require("express");
+const http = require("http");
 const cors = require("cors");
+const socketIo = require("socket.io");
 const connectDB = require("./config/db");
 
 const app = express();
+const server = http.createServer(app);
+
+// Setup Socket.io
+const io = socketIo(server, {
+  cors: {
+    origin: "*", // Allow all origins for the game
+    methods: ["GET", "POST"]
+  }
+});
+require("./socket")(io);
 
 app.use(cors());
 app.use(express.json());
@@ -31,6 +43,6 @@ app.get("/api/test", (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`🚀 Server and Socket.io running on port ${PORT}`);
 });

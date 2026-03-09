@@ -1,0 +1,29 @@
+
+> frontend@0.0.0 build
+> vite build
+
+[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 148 modules transformed.
+\n[31m✗[39m Build failed in 744ms
+[31merror during build:
+[31msrc/pages/MultiplayerGame.jsx (5:9): "getNextPuzzle" is not exported by "src/api/game.js", imported by "src/pages/MultiplayerGame.jsx".[31m
+file: [36mA:/Game-Development/CIS046-3-Software-For-Enterprise-Project/frontend/src/pages/MultiplayerGame.jsx:5:9[31m
+[33m
+3: import socket from "../utils/socket";
+4: import { AuthContext } from "../context/AuthContext";
+5: import { getNextPuzzle } from "../api/game";
+            ^
+6: import "../styles/app.css";
+7: import "../styles/Game.css";
+[31m
+    at getRollupError (file:///A:/Game-Development/CIS046-3-Software-For-Enterprise-Project/frontend/node_modules/rollup/dist/es/shared/parseAst.js:402:41)
+    at error (file:///A:/Game-Development/CIS046-3-Software-For-Enterprise-Project/frontend/node_modules/rollup/dist/es/shared/parseAst.js:398:42)
+    at Module.error (file:///A:/Game-Development/CIS046-3-Software-For-Enterprise-Project/frontend/node_modules/rollup/dist/es/shared/node-entry.js:17040:16)
+    at Module.traceVariable (file:///A:/Game-Development/CIS046-3-Software-For-Enterprise-Project/frontend/node_modules/rollup/dist/es/shared/node-entry.js:17452:29)
+    at ModuleScope.findVariable (file:///A:/Game-Development/CIS046-3-Software-For-Enterprise-Project/frontend/node_modules/rollup/dist/es/shared/node-entry.js:15070:39)
+    at FunctionScope.findVariable (file:///A:/Game-Development/CIS046-3-Software-For-Enterprise-Project/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)
+    at FunctionBodyScope.findVariable (file:///A:/Game-Development/CIS046-3-Software-For-Enterprise-Project/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)
+    at ReturnValueScope.findVariable (file:///A:/Game-Development/CIS046-3-Software-For-Enterprise-Project/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)
+    at FunctionBodyScope.findVariable (file:///A:/Game-Development/CIS046-3-Software-For-Enterprise-Project/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)
+    at BlockScope.findVariable (file:///A:/Game-Development/CIS046-3-Software-For-Enterprise-Project/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)[39m
