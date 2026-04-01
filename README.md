@@ -1,8 +1,54 @@
 # 🍌 Banana Brain Quest 🧠
 
-![Banana Brain Quest](https://img.shields.io/badge/Status-Active-brightgreen.svg) ![License](https://img.shields.io/badge/License-MIT-blue.svg)
+<div align="center">
+  <a href="https://uob-game.netlify.app/">
+    <img src="./banana_banner.png" alt="Banana Brain Quest Banner" width="800"/>
+  </a>
+</div>
+
+<div align="center">
+  <h3>🌟 Play the Live Game: <a href="https://uob-game.netlify.app/">https://uob-game.netlify.app/</a> 🌟</h3>
+</div>
+
+<p align="center">
+  <img alt="Status" src="https://img.shields.io/badge/Status-Active-brightgreen.svg">
+  <img alt="Tests" src="https://img.shields.io/badge/Playwright%20Tests-Passing-success">
+  <img alt="License" src="https://img.shields.io/badge/License-MIT-blue.svg">
+</p>
 
 Welcome to **Banana Brain Quest**, a premium, competitive math puzzle game built with a stunning jungle/gold glassmorphism aesthetic! Test your pattern recognition, compete against friends in real-time, and climb the ranks from *Novice* to *Banana God*!
+
+---
+
+## 📂 Project Structure
+
+```text
+CIS046-3-Software-For-Enterprise-Project/
+│
+├── frontend/                # React.js & Vite Client
+│   ├── src/
+│   │   ├── api/             # Axios API interconnectors
+│   │   ├── components/      # Reusable UI elements
+│   │   ├── context/         # Auth & Global State providers
+│   │   ├── pages/           # Core App Routes (Game, Admin, Profile, Login)
+│   │   └── utils/           # Helper functions & socket setup
+│   └── package.json
+│
+├── backend/                 # Node.js & Express Server
+│   ├── controllers/         # Core business logic & endpoints
+│   ├── models/              # Mongoose DB schemas
+│   ├── routes/              # Express API Routes
+│   └── server.js            # Entry Point & Socket.io handling
+│
+└── Testing/                 # 🤖 Playwright E2E Suite
+    ├── playwright.config.js # Responsive Emulation settings
+    └── tests/               
+        ├── admin.spec.js    # Secure dashboard routing tests 
+        ├── auth.spec.js     # Login & Registration UI logic tests 
+        ├── gameplay.spec.js # Core game engine & websocket tests 
+        ├── player.spec.js   # Private Profile/History tracking 
+        └── public.spec.js   # Responsive Home & Leaderboard layout tests
+```
 
 ---
 
@@ -13,36 +59,19 @@ Welcome to **Banana Brain Quest**, a premium, competitive math puzzle game built
 * **Real-Time Multiplayer**: Compete head-to-head against other players! Features a synchronized timer, live VS dashboard, and instant win/loss condition tracking via Socket.io.
 
 ### 🏆 **Deep Gamification & Progression**
-* **XP & Ranking System**: Earn XP for solving puzzles and completing objectives. Level up through 10 distinct ranks (e.g., Novice, Adept, Master, Grandmaster).
-* **Cherries & Lives**: Earn *Cherries* 🍒 by completing objectives or playing daily. Spend them mid-game to buy extra lives (Brains 🧠) and save your run!
+* **XP & Ranking System**: Earn XP for solving puzzles and completing objectives. Level up through 10 distinct ranks.
 * **Badges & Achievements**: Unlock unique badges for reaching milestones like "First Win" or "Speed Demon".
 
-### 📊 **Competitive Tracking**
+### 📊 **Competitive Tracking & E2E Testing**
 * **Global Leaderboards**: See where you rank among all players.
-* **Match History**: Review details of your past multiplayer and singleplayer matches in a dedicated dashboard.
-
-### 🎨 **Premium UI/UX**
-* **Glassmorphism Aesthetic**: Beautiful transparent cards, dynamic glowing gradients, and floating intuitive interfaces.
-* **Custom Avatars**: Dynamically generated avatars via the DiceBear API or custom emojis.
-* **First-Time Tutorial**: LocalStorage powered "How to Play" modal ensuring new players grasp the mechanics immediately.
+* **Automated Playwright Suite**: 100% End-to-End coverage testing responsive flows (Mobile/Desktop) on every single page.
 
 ---
 
-## 🛠️ Technology Stack
-
-* **Frontend**: React.js, Vite, React Router, Socket.io-client
-* **Backend**: Node.js, Express, Socket.io, JWT for robust Authentication
-* **Styling**: Custom CSS3 with dynamic variables and Flexbox/CSS Grid layouts
-
----
-
-## 🚀 Getting Started
-
-To run the game locally, you will need to start both the backend server and the frontend client.
+## 🚀 Getting Started Locally
 
 ### Prerequisites
-* Node.js (v16 or higher recommended)
-* NPM or Yarn
+* Node.js (v16+) & MongoDB
 
 ### 1. Start the Backend
 ```bash
@@ -59,16 +88,18 @@ npm install
 npm run dev
 ```
 
-The game should now be running on `http://localhost:5173`!
+### 3. Run E2E Tests
+To launch the automated test robots against your UI:
+```bash
+cd Testing
+npx playwright test --ui
+```
 
 ---
 
 ## 🎯 How to Play
-
-1. Choose a difficulty (Easy, Medium, Hard).
-2. Look at the visual puzzle and figure out the missing single digit (`0-9`).
-3. Enter your answer and smack the **🦍 GO BANANAS!** button.
-4. Don't run out of lives (🧠) and beat the timer (⏱) if playing on Medium/Hard! 
-
-## 📝 License
-This project is licensed under the MIT License.
+1. Go to **[https://uob-game.netlify.app](https://uob-game.netlify.app)**
+2. Choose a difficulty (Easy, Medium, Hard).
+3. Look at the visual puzzle and figure out the missing single digit (`0-9`).
+4. Enter your answer and smack the **🦍 GO BANANAS!** button.
+5. Don't run out of lives (🧠) and beat the timer (⏱)! 
