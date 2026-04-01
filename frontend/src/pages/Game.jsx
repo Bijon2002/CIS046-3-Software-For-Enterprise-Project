@@ -279,7 +279,11 @@ export default function Game() {
       } else {
         loseLife(`❌ Wrong! Answer: ${res.data.correctAnswer}`, "wrong");
       }
-    } catch { setMsg("Submission failed"); }
+    } catch { 
+        setMsg("Submission failed"); 
+        setTimeout(() => setIsLocked(false), 1500);
+        setAnswer("");
+    }
   };
 
   const timerClass = () => {
@@ -507,7 +511,7 @@ export default function Game() {
             {/* Center Puzzle Display */}
             <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "10px 20px" }}>
               {puzzle?.image ? (
-                <img src={`data:image/png;base64,${puzzle.image}`} alt="puzzle" style={{ maxHeight: "40vh", objectFit: "contain", filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.5))", transform: "scale(1.05)" }} />
+                <img src={puzzle.image.startsWith("http") ? puzzle.image : `data:image/png;base64,${puzzle.image}`} alt="puzzle" style={{ maxHeight: "40vh", objectFit: "contain", filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.5))", transform: "scale(1.05)" }} />
               ) : (
                 <div style={{ color: "#FFF", fontSize: "1.5rem" }}>Loading Next Puzzle...</div>
               )}

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import socket from "../utils/socket";
 import { AuthContext } from "../context/AuthContext";
-import { getPuzzle, submitAnswer } from "../api/game";
+import { getPuzzle, submitAnswer, saveMultiplayerMatch } from "../api/game";
 import "../styles/app.css";
 import "../styles/Game.css";
 
@@ -56,9 +56,11 @@ export default function MultiplayerGame() {
         socket.on("opponentLeft", ({ message }) => {
             clearInterval(timerRef.current);
             setMsg(message);
+            // If they left during gameplay, the player wins
+            if (phase === "playing") {
+                setGameResult("win");
+            }
             setPhase("gameover");
-            // Current player auto wins
-            setGameResult("win");
         });
 
         // Local Timer
@@ -96,25 +98,40 @@ export default function MultiplayerGame() {
     const handleTimeUp = () => {
         setPhase("gameover");
         setMsg("Time's up!");
-
-        // We get the final scores
-        setPlayers(currentPlayers => {
-            const me = currentPlayers.find(p => p.id === socket.id);
-            const opponent = currentPlayers.find(p => p.id !== socket.id);
-
-            if (!opponent || !me) return currentPlayers;
-
-            // Determine win/loss
-            if (me.score > opponent.score) {
-                setGameResult("win");
-            } else if (me.score < opponent.score) {
-                setGameResult("lose");
-            } else {
-                setGameResult("tie");
-            }
-            return currentPlayers;
-        });
+        clearInterval(timerRef.current);
     };
+
+    // Global Finalizer Effect: Runs ONCE when game enters gameover state
+    useEffect(() => {
+        if (phase !== "gameover") return;
+
+        const meObj = players.find(p => p.id === socket.id);
+        const opponentObj = players.find(p => p.id !== socket.id);
+
+        if (!meObj) return;
+
+        let result = "tie";
+        if (gameResult === "win") {
+             // Already set by opponentLeft handler
+             result = "win";
+        } else if (opponentObj) {
+            if (meObj.score > opponentObj.score) result = "win";
+            else if (meObj.score < opponentObj.score) result = "lose";
+        }
+        setGameResult(result);
+
+        // Save to DB
+        saveMultiplayerMatch({
+            roomCode,
+            opponentId: opponentObj?.userId || null,
+            myScore: meObj.score,
+            opponentScore: opponentObj?.score || 0,
+            duration: initialRoomData?.timer || 60
+        })
+        .then(() => console.log("✅ Match saved to history"))
+        .catch(e => console.error("Could not save multiplayer match:", e));
+
+    }, [phase]); // Only run when phase changes to gameover
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -127,23 +144,31 @@ export default function MultiplayerGame() {
             if (res.data.isCorrect) {
                 // Correct! Add points and tell server
                 setMsg("Correct! +10");
-                setPlayers(currentPlayers => {
-                    const updated = [...currentPlayers];
-                    const meIdx = updated.findIndex(p => p.id === socket.id);
-                    if (meIdx !== -1) {
-                        updated[meIdx].score += 10;
-                        socket.emit("updateScore", { roomCode, score: updated[meIdx].score });
-                    }
-                    return updated;
-                });
+
+                // Calculate next score without mutating previous state objects!
+                const meObj = players.find(p => p.id === socket.id);
+                const prevScore = meObj ? (meObj.score || 0) : 0;
+                const newScore = prevScore + 10;
+                
+                // Blast the score up immediately (outside of React setter closure!)
+                socket.emit("updateScore", { roomCode, score: newScore });
+
+                // Immutably write local update
+                setPlayers(currentPlayers => 
+                    currentPlayers.map(p => p.id === socket.id ? { ...p, score: newScore } : p)
+                );
+
                 // Wait briefly then load next
                 setTimeout(loadPuzzle, 800);
             } else {
                 setMsg(`❌ Wrong! The correct answer was ${res.data.correctAnswer}`);
                 setAnswer("");
+                setTimeout(loadPuzzle, 1500); // Load next puzzle so they don't get stuck
             }
         } catch (err) {
             setMsg("Submission failed");
+            setAnswer("");
+            setTimeout(loadPuzzle, 1500); // Unlock if api limits us or errors out
         }
     };
 
@@ -204,7 +229,7 @@ export default function MultiplayerGame() {
             <div className="glass-card" style={{ maxWidth: 800, width: "100%", textAlign: "center", opacity: phase === "gameover" ? 0.5 : 1, position: "relative", zIndex: 5, padding: "24px 20px" }}>
 
                 {puzzle?.image && (
-                    <img src={`data:image/png;base64,${puzzle.image}`} alt="banana brain quest" className="puzzle-img" style={{ margin: "10px auto", display: "block", maxHeight: "35vh", objectFit: "contain" }} />
+                    <img src={puzzle.image.startsWith("http") ? puzzle.image : `data:image/png;base64,${puzzle.image}`} alt="banana brain quest" className="puzzle-img" style={{ margin: "10px auto", display: "block", maxHeight: "35vh", objectFit: "contain" }} />
                 )}
 
                 <form onSubmit={handleSubmit} style={{ marginTop: 10, display: "flex", gap: 12, width: "100%", maxWidth: 500, margin: "0 auto" }}>
@@ -247,14 +272,19 @@ export default function MultiplayerGame() {
                             {gameResult === "win" ? "🏆 YOU WIN! 🏆" : (gameResult === "tie" ? "🤝 IT'S A TIE!" : "💀 YOU LOSE!")}
                         </h1>
 
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 30, background: "rgba(0,0,0,0.3)", padding: 20, borderRadius: 12 }}>
-                            <div style={{ textAlign: "center" }}>
-                                <div style={{ color: "#FFD700", fontSize: "0.8rem", marginBottom: 5 }}>YOU</div>
-                                <div style={{ color: "#FFF", fontSize: "1.5rem" }}>{me?.score} pts</div>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 30, background: "rgba(0,0,0,0.4)", padding: "20px", borderRadius: 16, border: "1px solid rgba(255,215,0,0.3)" }}>
+                            <div style={{ textAlign: "center", flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                                <PlayerAvatar pic={me?.avatar} nickname={me?.nickname} />
+                                <div style={{ color: "#FFD700", fontSize: "0.8rem", fontWeight: "bold", textTransform: "uppercase" }}>{me?.nickname || "YOU"}</div>
+                                <div style={{ color: "#7CFC00", fontSize: "1.8rem", textShadow: "0 2px 10px rgba(124, 252, 0, 0.4)" }}>{me?.score} pts</div>
                             </div>
-                            <div style={{ textAlign: "center" }}>
-                                <div style={{ color: "#FF6B6B", fontSize: "0.8rem", marginBottom: 5 }}>THEM</div>
-                                <div style={{ color: "#FFF", fontSize: "1.5rem" }}>{opponent?.score} pts</div>
+                            
+                            <div style={{ color: "#FFF", fontSize: "2rem", opacity: 0.5, fontStyle: "italic", fontWeight: "bold", margin: "0 10px" }}>VS</div>
+                            
+                            <div style={{ textAlign: "center", flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                                <PlayerAvatar pic={opponent?.avatar} nickname={opponent?.nickname} />
+                                <div style={{ color: "#FF6B6B", fontSize: "0.8rem", fontWeight: "bold", textTransform: "uppercase" }}>{opponent?.nickname || "THEM"}</div>
+                                <div style={{ color: "#FFF", fontSize: "1.8rem", textShadow: "0 2px 10px rgba(255, 255, 255, 0.4)" }}>{opponent?.score || 0} pts</div>
                             </div>
                         </div>
 

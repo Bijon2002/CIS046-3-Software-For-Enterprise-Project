@@ -6,12 +6,12 @@ module.exports = (io) => {
         console.log(`🔌 Player connected: ${socket.id}`);
 
         // Create a new multiplayer room
-        socket.on("createRoom", ({ nickname, avatar, timerSetting }, callback) => {
+        socket.on("createRoom", ({ nickname, avatar, timerSetting, userId }, callback) => {
             // Generate a 6-character alphanumeric room code
             const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
             rooms[roomCode] = {
-                players: [{ id: socket.id, nickname, avatar, score: 0 }],
+                players: [{ id: socket.id, nickname, avatar, score: 0, userId }],
                 timerSetting: timerSetting || 60,
                 status: "waiting", // waiting | playing | finished
                 timerId: null,
@@ -23,7 +23,7 @@ module.exports = (io) => {
         });
 
         // Join an existing room
-        socket.on("joinRoom", ({ roomCode, nickname, avatar }, callback) => {
+        socket.on("joinRoom", ({ roomCode, nickname, avatar, userId }, callback) => {
             const room = rooms[roomCode];
 
             if (!room) {
@@ -37,11 +37,22 @@ module.exports = (io) => {
             }
 
             // Add second player
-            room.players.push({ id: socket.id, nickname, avatar, score: 0 });
+            room.players.push({ id: socket.id, nickname, avatar, score: 0, userId });
             socket.join(roomCode);
             room.status = "playing"; // both are here, let's start!
 
             console.log(`🏠 ${nickname} joined Room ${roomCode}`);
+
+            // Start a server-side timer to end the game
+            let timeLeft = room.timerSetting;
+            room.timerId = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    clearInterval(room.timerId);
+                    room.status = "finished";
+                    io.to(roomCode).emit("gameFinished", room.players);
+                }
+            }, 1000);
 
             // Tell everyone in the room the game is starting and who is playing
             io.to(roomCode).emit("gameReady", {

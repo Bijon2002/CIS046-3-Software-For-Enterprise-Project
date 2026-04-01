@@ -23,11 +23,11 @@ export default function MultiplayerLobby() {
     useEffect(() => {
         socket.connect();
 
-        // Fetch user profile
-        import("../api/auth").then(({ getProfile }) => {
-            getProfile().then(p => {
-                setMyNickname(p.data.username || "Player");
-                setMyAvatar(p.data.profilePicture || "");
+        // Fetch user profile using the game API (getMe returns nickname & profilePic)
+        import("../api/game").then(({ getMe }) => {
+            getMe().then(p => {
+                setMyNickname(p.data.nickname || "Player");
+                setMyAvatar(p.data.profilePic || "🐒");
             }).catch(e => console.error("Could not fetch profile", e));
         });
 
@@ -48,7 +48,8 @@ export default function MultiplayerLobby() {
         const payload = {
             nickname: myNickname,
             avatar: myAvatar || "🐒",
-            timerSetting
+            timerSetting,
+            userId: user?._id || user?.id // Pass the real MongoDB ID
         };
 
         socket.emit("createRoom", payload, (response) => {
@@ -70,13 +71,13 @@ export default function MultiplayerLobby() {
             roomCode: roomCodeInput.toUpperCase(),
             nickname: myNickname,
             avatar: myAvatar || "🐒",
+            userId: user?._id || user?.id
         };
 
         socket.emit("joinRoom", payload, (response) => {
             if (!response.success) {
                 setMsg(response.message || "Failed to join room.");
             }
-            // If success, we just wait for the 'gameReady' event event which is broadcasted by server
         });
     };
 
@@ -89,12 +90,20 @@ export default function MultiplayerLobby() {
                 {!mode && !waiting && (
                     <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 20 }}>
                         <p style={{ color: "rgba(205,185,144,0.8)", fontSize: "0.85rem", marginBottom: 10 }}>Play head-to-head in real time!</p>
-                        <button className="home-btn" style={{ background: "linear-gradient(90deg, #4CAF50, #2E7D32)" }} onClick={() => setMode("create")}>
-                            ✨ Create Match
-                        </button>
-                        <button className="home-btn" style={{ background: "linear-gradient(90deg, #2196F3, #1565C0)" }} onClick={() => setMode("join")}>
-                            🔍 Join Match
-                        </button>
+                        
+                        {!user ? (
+                            <p style={{ color: "#FFD700", fontSize: "0.8rem", animation: "pulse 1.5s infinite" }}>⏳ Syncing Account...</p>
+                        ) : (
+                            <>
+                                <button className="home-btn" style={{ background: "linear-gradient(90deg, #4CAF50, #2E7D32)" }} onClick={() => setMode("create")}>
+                                    ✨ Create Match
+                                </button>
+                                <button className="home-btn" style={{ background: "linear-gradient(90deg, #2196F3, #1565C0)" }} onClick={() => setMode("join")}>
+                                    🔍 Join Match
+                                </button>
+                            </>
+                        )}
+
                         <button className="home-btn" style={{ background: "rgba(255,255,255,0.1)", marginTop: 10 }} onClick={() => navigate("/")}>
                             BACK
                         </button>

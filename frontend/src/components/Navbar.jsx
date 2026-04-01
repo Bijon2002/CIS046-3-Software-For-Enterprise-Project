@@ -63,6 +63,7 @@ export default function Navbar() {
       {token && (
         <>
           <Link to="/game">Game</Link>
+          <Link to="/multiplayer">Multiplayer</Link>
           <Link to="/history">History</Link>
           <Link to="/leaderboard">Leaderboard</Link>
           {role === "admin" && <Link to="/admin">Admin</Link>}

@@ -1,7 +1,9 @@
 const crypto = require("crypto");
+const mongoose = require("mongoose");
 const Attempt = require("../models/Attempt");
 const User = require("../models/User");
 const GameSession = require("../models/GameSession");
+const MultiplayerMatch = require("../models/MultiplayerMatch");
 
 /* ================================================================
    RANKS & OBJECTIVES — shared constants
@@ -111,10 +113,18 @@ async function checkObjectives(user, sessionData) {
 exports.getPuzzle = async (req, res) => {
   try {
     const r = await fetch(process.env.BANANA_API_URL);
-    if (!r.ok) return res.status(502).json({ message: "Banana API error" });
+    let data;
 
-    const data = await r.json();
-    console.log("🍌 Banana API keys:", Object.keys(data));
+    if (!r.ok) {
+      console.warn(`🍌 Banana API error (${r.status}). Using fallback puzzle to prevent block.`);
+      data = {
+        question: "https://dummyimage.com/400x400/ffd700/000&text=API+Rate+Limit!+Answer+is+5",
+        solution: 5
+      };
+    } else {
+      data = await r.json();
+      console.log("🍌 Banana API keys:", Object.keys(data));
+    }
 
     let image = data.image || data.question || data.img || data.base64;
     const solutionRaw = data.solution ?? data.answer ?? data.result;
@@ -149,7 +159,7 @@ exports.getPuzzle = async (req, res) => {
 
 exports.me = async (req, res) => {
   try {
-    const user = await User.findById(req.userId)
+    const user = await User.findById(new mongoose.Types.ObjectId(req.userId))
       .select("nickname email highestScore role xp cherries profilePic completedObjectives");
     const rankInfo = getRank(user.xp);
     res.json({ ...user.toObject(), rank: rankInfo });
@@ -395,6 +405,90 @@ exports.history = async (req, res) => {
       .select("difficulty score puzzlesSolved puzzlesAttempted livesUsed duration xpEarned cherriesUsed createdAt");
     res.json(sessions);
   } catch (err) {
+    console.error("❌ history error:", err.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.saveMultiplayerMatch = async (req, res) => {
+  try {
+    const { roomCode, opponentId, myScore, opponentScore, duration } = req.body;
+    
+    let match;
+    if (roomCode) {
+        match = await MultiplayerMatch.findOne({ roomCode });
+    }
+    
+    if (!match) {
+        // First player to save — create the match
+        // Store this player as playerOne with their confirmed score
+        // Store opponent info from their perspective (will be corrected when opponent saves)
+        match = await MultiplayerMatch.create({
+            roomCode: roomCode || "UNKNOWN",
+            playerOne: req.userId,
+            playerTwo: mongoose.isValidObjectId(opponentId) ? opponentId : null,
+            playerOneScore: myScore || 0,
+            playerTwoScore: opponentScore || 0,
+            winner: null, // Don't decide winner until both have saved
+            duration: duration || 60
+        });
+
+        // If opponent is not a registered user (no valid userId), calculate winner now
+        if (!mongoose.isValidObjectId(opponentId)) {
+            let winnerId = null;
+            if (myScore > opponentScore) winnerId = req.userId;
+            match.winner = winnerId;
+            await match.save();
+        }
+    } else {
+        // Second player to save — update the match with their confirmed data
+        const isPlayerOne = match.playerOne.toString() === req.userId;
+        
+        if (isPlayerOne) {
+            // PlayerOne is saving again (unlikely but safe)
+            match.playerOneScore = myScore || 0;
+        } else {
+            // This is the second player — fill in as playerTwo
+            match.playerTwo = req.userId;
+            match.playerTwoScore = myScore || 0;
+            // Update playerOne's score from opponent's perspective (more reliable for opponent score)
+            // Actually keep playerOneScore from original save since playerOne set it themselves
+        }
+        
+        // Now both players have saved — calculate the winner properly
+        let winnerId = null;
+        if (match.playerOneScore > match.playerTwoScore) {
+            winnerId = match.playerOne;
+        } else if (match.playerTwoScore > match.playerOneScore) {
+            winnerId = match.playerTwo;
+        }
+        // If scores are equal, winnerId stays null (tie)
+        
+        match.winner = winnerId;
+        await match.save();
+    }
+    
+    res.json(match);
+  } catch (err) {
+    console.error("❌ saveMultiplayerMatch error:", err.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.getMultiplayerHistory = async (req, res) => {
+  try {
+    const matches = await MultiplayerMatch.find({
+        $or: [{ playerOne: req.userId }, { playerTwo: req.userId }]
+    })
+    .sort({ createdAt: -1 })
+    .limit(20)
+    .populate("playerOne", "nickname profilePic xp")
+    .populate("playerTwo", "nickname profilePic xp")
+    .populate("winner", "nickname");
+
+    res.json(matches);
+  } catch (err) {
+    console.error("❌ getMultiplayerHistory error:", err.message);
     res.status(500).json({ message: "Server error" });
   }
 };

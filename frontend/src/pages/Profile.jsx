@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { getProfile, updateProfilePic, buyCherry as buyCherryAPI } from "../api/game";
+import { getProfile, updateProfilePic, buyCherry as buyCherryAPI, getMultiplayerHistory } from "../api/game";
 import "../styles/Profile.css";
 
 /* ── DiceBear presets ── */
@@ -47,6 +47,7 @@ function AvatarDisplay({ pic, nickname, size = "100%", style = {} }) {
 
 export default function Profile() {
     const [data, setData] = useState(null);
+    const [vsSessions, setVsSessions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showPicSelector, setShowPicSelector] = useState(false);
     const [buyMsg, setBuyMsg] = useState("");
@@ -59,6 +60,8 @@ export default function Profile() {
             .then((res) => setData(res.data))
             .catch(() => { })
             .finally(() => setLoading(false));
+
+        getMultiplayerHistory().then(res => setVsSessions(res.data)).catch(() => {});
     };
 
     useEffect(() => { loadProfile(); }, []);
@@ -330,6 +333,55 @@ export default function Profile() {
                                             <td>{s.puzzlesSolved}/{s.puzzlesAttempted}</td>
                                         </tr>
                                     ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+
+                {/* Recent VS Battles */}
+                <div className="glass-card">
+                    <h2>⚔️ VS Battles</h2>
+                    {vsSessions?.length === 0 ? (
+                        <p style={{ textAlign: "center" }}>No VS Battles fought yet 🍌</p>
+                    ) : (
+                        <div style={{ overflowX: "auto" }}>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Result</th>
+                                        <th>Your Score</th>
+                                        <th>Opponent</th>
+                                        <th>Their Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {vsSessions?.map((match) => {
+                                        const myId = user._id; // Ensure it looks at user structure
+                                        const isWin = match.winner && match.winner._id === myId;
+                                        const isTie = !match.winner;
+                                        const isP1 = match.playerOne?._id === myId;
+                                        
+                                        const them = isP1 ? match.playerTwo : match.playerOne;
+                                        const myScore = isP1 ? match.playerOneScore : match.playerTwoScore;
+                                        const themScore = isP1 ? match.playerTwoScore : match.playerOneScore;
+
+                                        return (
+                                        <tr key={match._id}>
+                                            <td>{new Date(match.createdAt).toLocaleDateString()}</td>
+                                            <td style={{ color: isWin ? "#7CFC00" : (isTie ? "#FFD700" : "#FF6B6B"), fontWeight: "bold" }}>
+                                                {isWin ? "WIN" : (isTie ? "TIE" : "LOSS")}
+                                            </td>
+                                            <td style={{ color: "#7CFC00" }}>{myScore}</td>
+                                            <td style={{ display: "flex", alignItems: "center", gap: 8, border: "none" }}>
+                                                <AvatarDisplay pic={them?.profilePic} nickname={them?.nickname} size={24} />
+                                                <span>{them?.nickname || "Unknown"}</span>
+                                            </td>
+                                            <td style={{ color: "#FF6B6B" }}>{themScore}</td>
+                                        </tr>
+                                        )
+                                    })}
                                 </tbody>
                             </table>
                         </div>

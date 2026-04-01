@@ -9,6 +9,8 @@ export const saveGameSession = (data) =>
 export const getProfile = () => api.get("/game/profile");
 export const getLeaderboard = () => api.get("/game/leaderboard");
 export const getHistory = () => api.get("/game/history");
+export const getMultiplayerHistory = () => api.get("/game/multiplayer-history");
+export const saveMultiplayerMatch = (data) => api.post("/game/multiplayer-result", data);
 
 // Cherry & Profile
 export const useCherry = () => api.post("/game/use-cherry");
