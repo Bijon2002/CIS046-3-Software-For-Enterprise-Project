@@ -30,6 +30,8 @@ export default function Login() {
         <form onSubmit={submit} style={{ display: "grid", gap: 14 }}>
           <input
             placeholder="Email"
+            type="email"
+            name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
