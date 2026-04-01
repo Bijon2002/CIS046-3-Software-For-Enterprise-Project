@@ -926,3 +926,95 @@
         padding: 30px 20px;
     }
 }
+
+/* ────────── MOBILE OVERRIDES FOR GAME CONSOLE LAYOUT ────────── */
+@media (max-width: 768px) {
+    .game-console-wrapper {
+        flex-direction: column !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: hidden !important;
+    }
+
+    /* Target the Left Command Center */
+    .game-console-wrapper > div:first-child {
+        width: 100% !important;
+        border-right: none !important;
+        border-bottom: 2px solid rgba(255, 215, 0, 0.3) !important;
+        padding: 20px 10px !important;
+    }
+
+    /* Quick Stats Grid */
+    .game-console-wrapper > div:first-child > div:nth-child(3) {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+
+    /* Target the Right Game Arena */
+    .game-console-wrapper > div:last-child {
+        width: 100% !important;
+        max-width: 100vw !important;
+    }
+
+    /* Header Bar */
+    .game-console-wrapper > div:last-child > div:first-child {
+        padding: 15px 15px !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        align-items: center !important;
+        text-align: center;
+    }
+
+    .game-console-wrapper .game-timer {
+        font-size: 1.8rem !important;
+        margin-top: 5px;
+    }
+
+    /* The Center Image Display */
+    .game-console-wrapper > div:last-child > div:nth-child(2) {
+        width: 100% !important;
+        padding: 10px !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        overflow: hidden !important;
+    }
+
+    /* The Raw Puzzle Image constraint */
+    .game-console-wrapper > div:last-child > div:nth-child(2) img {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        max-height: 40vh !important;
+        object-fit: contain !important;
+        transform: scale(1) !important; /* Disarms the layout breaking scale */
+    }
+
+    /* Bottom Action Footer */
+    .game-console-wrapper > div:last-child > div:last-child {
+        padding: 15px !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+        align-items: center !important;
+    }
+
+    /* Form inside Action Footer */
+    .game-console-wrapper form {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    .game-console-wrapper form input {
+        width: 100% !important;
+        max-width: 100% !important;
+        font-size: 1.2rem !important;
+    }
+
+    .game-console-wrapper form button {
+        width: 100% !important;
+        padding: 14px 20px !important;
+        font-size: 1rem !important;
+    }
+}

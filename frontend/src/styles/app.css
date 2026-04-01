@@ -40,8 +40,10 @@ body {
 .navbar {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 12px 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
   background: rgba(10, 8, 2, 0.82);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -52,6 +54,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
+  width: 100%;
 }
 
 /* Brand */
@@ -62,6 +65,7 @@ body {
   text-decoration: none !important;
   letter-spacing: 1px;
   flex-shrink: 0;
+  margin-bottom: 4px;
 }
 
 /* Spacer pushes all links to the right */
@@ -231,6 +235,41 @@ body {
     0 8px 40px rgba(0, 0, 0, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   animation: cardFadeIn 0.5s ease-out both;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* ---------- Page Layout ---------- */
+.page-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 56px);
+  padding: 40px 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .page-container {
+    padding: 20px 10px !important;
+  }
+  .glass-card {
+    padding: 24px 14px !important;
+    border-radius: 16px;
+    width: 100% !important;
+  }
+  .navbar-spacer {
+    display: none; /* remove spacer to let links center wrap correctly */
+  }
+  .navbar {
+    padding: 10px 8px;
+  }
+  .navbar-brand {
+    width: 100%;
+    margin-bottom: 8px;
+    text-align: center;
+  }
 }
 
 @keyframes cardFadeIn {
@@ -245,14 +284,11 @@ body {
   }
 }
 
-/* ---------- Page Layout ---------- */
-.page-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: calc(100vh - 56px);
-  padding: 40px 20px;
+/* Also ensure tables properly overflow horizontally if too wide */
+.glass-card table {
+  max-width: 100%;
 }
+
 
 /* ---------- Headings ---------- */
 h2 {
