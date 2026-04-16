@@ -1,3 +1,4 @@
+// Note: Parts of this file were generated with AI assistance as per assignment guidelines.
 require("dotenv").config();
 const express = require("express");
 const http = require("http");

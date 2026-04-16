@@ -1,3 +1,4 @@
+// Note: Parts of this file were generated with AI assistance as per assignment guidelines.
 const crypto = require("crypto");
 const mongoose = require("mongoose");
 const Attempt = require("../models/Attempt");
@@ -413,61 +414,61 @@ exports.history = async (req, res) => {
 exports.saveMultiplayerMatch = async (req, res) => {
   try {
     const { roomCode, opponentId, myScore, opponentScore, duration } = req.body;
-    
+
     let match;
     if (roomCode) {
-        match = await MultiplayerMatch.findOne({ roomCode });
+      match = await MultiplayerMatch.findOne({ roomCode });
     }
-    
-    if (!match) {
-        // First player to save — create the match
-        // Store this player as playerOne with their confirmed score
-        // Store opponent info from their perspective (will be corrected when opponent saves)
-        match = await MultiplayerMatch.create({
-            roomCode: roomCode || "UNKNOWN",
-            playerOne: req.userId,
-            playerTwo: mongoose.isValidObjectId(opponentId) ? opponentId : null,
-            playerOneScore: myScore || 0,
-            playerTwoScore: opponentScore || 0,
-            winner: null, // Don't decide winner until both have saved
-            duration: duration || 60
-        });
 
-        // If opponent is not a registered user (no valid userId), calculate winner now
-        if (!mongoose.isValidObjectId(opponentId)) {
-            let winnerId = null;
-            if (myScore > opponentScore) winnerId = req.userId;
-            match.winner = winnerId;
-            await match.save();
-        }
-    } else {
-        // Second player to save — update the match with their confirmed data
-        const isPlayerOne = match.playerOne.toString() === req.userId;
-        
-        if (isPlayerOne) {
-            // PlayerOne is saving again (unlikely but safe)
-            match.playerOneScore = myScore || 0;
-        } else {
-            // This is the second player — fill in as playerTwo
-            match.playerTwo = req.userId;
-            match.playerTwoScore = myScore || 0;
-            // Update playerOne's score from opponent's perspective (more reliable for opponent score)
-            // Actually keep playerOneScore from original save since playerOne set it themselves
-        }
-        
-        // Now both players have saved — calculate the winner properly
+    if (!match) {
+      // First player to save — create the match
+      // Store this player as playerOne with their confirmed score
+      // Store opponent info from their perspective (will be corrected when opponent saves)
+      match = await MultiplayerMatch.create({
+        roomCode: roomCode || "UNKNOWN",
+        playerOne: req.userId,
+        playerTwo: mongoose.isValidObjectId(opponentId) ? opponentId : null,
+        playerOneScore: myScore || 0,
+        playerTwoScore: opponentScore || 0,
+        winner: null, // Don't decide winner until both have saved
+        duration: duration || 60
+      });
+
+      // If opponent is not a registered user (no valid userId), calculate winner now
+      if (!mongoose.isValidObjectId(opponentId)) {
         let winnerId = null;
-        if (match.playerOneScore > match.playerTwoScore) {
-            winnerId = match.playerOne;
-        } else if (match.playerTwoScore > match.playerOneScore) {
-            winnerId = match.playerTwo;
-        }
-        // If scores are equal, winnerId stays null (tie)
-        
+        if (myScore > opponentScore) winnerId = req.userId;
         match.winner = winnerId;
         await match.save();
+      }
+    } else {
+      // Second player to save — update the match with their confirmed data
+      const isPlayerOne = match.playerOne.toString() === req.userId;
+
+      if (isPlayerOne) {
+        // PlayerOne is saving again (unlikely but safe)
+        match.playerOneScore = myScore || 0;
+      } else {
+        // This is the second player — fill in as playerTwo
+        match.playerTwo = req.userId;
+        match.playerTwoScore = myScore || 0;
+        // Update playerOne's score from opponent's perspective (more reliable for opponent score)
+        // Actually keep playerOneScore from original save since playerOne set it themselves
+      }
+
+      // Now both players have saved — calculate the winner properly
+      let winnerId = null;
+      if (match.playerOneScore > match.playerTwoScore) {
+        winnerId = match.playerOne;
+      } else if (match.playerTwoScore > match.playerOneScore) {
+        winnerId = match.playerTwo;
+      }
+      // If scores are equal, winnerId stays null (tie)
+
+      match.winner = winnerId;
+      await match.save();
     }
-    
+
     res.json(match);
   } catch (err) {
     console.error("❌ saveMultiplayerMatch error:", err.message);
@@ -478,13 +479,13 @@ exports.saveMultiplayerMatch = async (req, res) => {
 exports.getMultiplayerHistory = async (req, res) => {
   try {
     const matches = await MultiplayerMatch.find({
-        $or: [{ playerOne: req.userId }, { playerTwo: req.userId }]
+      $or: [{ playerOne: req.userId }, { playerTwo: req.userId }]
     })
-    .sort({ createdAt: -1 })
-    .limit(20)
-    .populate("playerOne", "nickname profilePic xp")
-    .populate("playerTwo", "nickname profilePic xp")
-    .populate("winner", "nickname");
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .populate("playerOne", "nickname profilePic xp")
+      .populate("playerTwo", "nickname profilePic xp")
+      .populate("winner", "nickname");
 
     res.json(matches);
   } catch (err) {

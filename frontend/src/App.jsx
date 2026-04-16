@@ -1,3 +1,4 @@
+// Note: Parts of this file were generated with AI assistance as per assignment guidelines.
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
